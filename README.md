@@ -1,2 +1,2 @@
-# NES
-NES emulator
+# Emulator
+NES 模拟器
