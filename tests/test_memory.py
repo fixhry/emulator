@@ -25,12 +25,3 @@ def test_read_word():
     m.write_byte(a+1, high)
     v = m.read_word(a)
     assert v == 0x1234, v
-
-
-def main():
-    test_read_byte()
-    test_write_byte()
-
-
-if __name__ == '__main__':
-    main()
