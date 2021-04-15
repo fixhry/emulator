@@ -1,0 +1,1282 @@
+[
+  {
+    "name": "BRK",
+    "mode": "IMM",
+    "cycles": 7
+  },
+  {
+    "name": "ORA",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "ORA",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "ASL",
+    "mode": "ZP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "PHP",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "ORA",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "ASL",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "ORA",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "ASL",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "BPL",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "ORA",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "ORA",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "ASL",
+    "mode": "ZPX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "CLC",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "ORA",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "ORA",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "ASL",
+    "mode": "ABX",
+    "cycles": 7
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "JSR",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "AND",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "BIT",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "AND",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "ROL",
+    "mode": "ZP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "PLP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "AND",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "ROL",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "BIT",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "AND",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "ROL",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "BMI",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "AND",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "AND",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "ROL",
+    "mode": "ZPX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "SEC",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "AND",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "AND",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "ROL",
+    "mode": "ABX",
+    "cycles": 7
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "RTI",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "EOR",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "EOR",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "LSR",
+    "mode": "ZP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "PHA",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "EOR",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "LSR",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "JMP",
+    "mode": "ABS",
+    "cycles": 3
+  },
+  {
+    "name": "EOR",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "LSR",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "BVC",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "EOR",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "EOR",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "LSR",
+    "mode": "ZPX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "CLI",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "EOR",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "EOR",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "LSR",
+    "mode": "ABX",
+    "cycles": 7
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "RTS",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "ADC",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "ADC",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "ROR",
+    "mode": "ZP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "PLA",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "ADC",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "ROR",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "JMP",
+    "mode": "IND",
+    "cycles": 5
+  },
+  {
+    "name": "ADC",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "ROR",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "BVS",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "ADC",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "ADC",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "ROR",
+    "mode": "ZPX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "SEI",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "ADC",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "ADC",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "ROR",
+    "mode": "ABX",
+    "cycles": 7
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "STA",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "STY",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "STA",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "STX",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "DEY",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "TXA",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "STY",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "STA",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "STX",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "BCC",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "STA",
+    "mode": "IZY",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "STY",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "STA",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "STX",
+    "mode": "ZPY",
+    "cycles": 4
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "TYA",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "STA",
+    "mode": "ABY",
+    "cycles": 5
+  },
+  {
+    "name": "TXS",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "STA",
+    "mode": "ABX",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "LDY",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "LDA",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "LDX",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "LDY",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "LDA",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "LDX",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 3
+  },
+  {
+    "name": "TAY",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "LDA",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "TAX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "LDY",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "LDA",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "LDX",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "BCS",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "LDA",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "LDY",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "LDA",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "LDX",
+    "mode": "ZPY",
+    "cycles": 4
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "CLV",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "LDA",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "TSX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "LDY",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "LDA",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "LDX",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "CPY",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "CMP",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "CPY",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "CMP",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "DEC",
+    "mode": "ZP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "INY",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "CMP",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "DEX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "CPY",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "CMP",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "DEC",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "BNE",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "CMP",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "CMP",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "DEC",
+    "mode": "ZPX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "CLD",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "CMP",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "CMP",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "DEC",
+    "mode": "ABX",
+    "cycles": 7
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "CPX",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "SBC",
+    "mode": "IZX",
+    "cycles": 6
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "CPX",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "SBC",
+    "mode": "ZP",
+    "cycles": 3
+  },
+  {
+    "name": "INC",
+    "mode": "ZP",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 5
+  },
+  {
+    "name": "INX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "SBC",
+    "mode": "IMM",
+    "cycles": 2
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "SBC",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "CPX",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "SBC",
+    "mode": "ABS",
+    "cycles": 4
+  },
+  {
+    "name": "INC",
+    "mode": "ABS",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "BEQ",
+    "mode": "REL",
+    "cycles": 2
+  },
+  {
+    "name": "SBC",
+    "mode": "IZY",
+    "cycles": 5
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 8
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "SBC",
+    "mode": "ZPX",
+    "cycles": 4
+  },
+  {
+    "name": "INC",
+    "mode": "ZPX",
+    "cycles": 6
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 6
+  },
+  {
+    "name": "SED",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "SBC",
+    "mode": "ABY",
+    "cycles": 4
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 2
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  },
+  {
+    "name": "NOP",
+    "mode": "IMP",
+    "cycles": 4
+  },
+  {
+    "name": "SBC",
+    "mode": "ABX",
+    "cycles": 4
+  },
+  {
+    "name": "INC",
+    "mode": "ABX",
+    "cycles": 7
+  },
+  {
+    "name": "XXX",
+    "mode": "IMP",
+    "cycles": 7
+  }
+]

@@ -1,9 +1,11 @@
-from cpu import *
 from memory import *
+from cpu import *
+from utils import *
 
 m = Memory()
 cpu = CPU(m)
 
 
 def test_exec():
-    pass
+    cpu.run()
+

@@ -25,3 +25,11 @@ def test_read_word():
     m.write_byte(a+1, high)
     v = m.read_word(a)
     assert v == 0x1234, v
+
+
+def test_write_world():
+    v1 = 0x1234
+    a = 110
+    m.write_word(a, v1)
+    v2 = m.read_word(a)
+    assert v1 == v2, v2
