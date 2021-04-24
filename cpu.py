@@ -42,9 +42,8 @@ class CPU:
         following actions:
     """
 
-    def __init__(self, memory, ppu):
-        self._ppu = ppu
-        self._memory = memory
+    def __init__(self, bus):
+        self._bus = bus
         self._setup_instruction_set()
         self._setup_registers()
         self._setup_status_flags()
@@ -99,7 +98,6 @@ class CPU:
         return v
 
     def _setup_instruction_set(self):
-
         self._instruction_set = dict()
         i = self._instruction_set
         # 操作 寻址模式 指令名 寻址模式 指令长度 CPU 周期
@@ -350,20 +348,20 @@ class CPU:
         return v
 
     def _read_byte(self, address):
-        m = self._memory.read_byte(address) & 0xFF
+        m = self._bus.read_byte(address)
         return m
 
     def _write_byte(self, address, value):
-        return self._memory.write_byte(address, value)
+        return self._bus.write_byte(address, value)
 
     def _read_word(self, address):
         """
         6502 字节顺序是小端
         """
-        return self._memory.read_word(address)
+        return self._bus.read_word(address)
 
     def _write_word(self, address, value):
-        return self._memory.write_word(address, value)
+        return self._bus.write_word(address, value)
 
     def _shift_right(self, value):
         self._set_carry_flag(bool(value & 0x01))
@@ -393,7 +391,7 @@ class CPU:
         self._set_negative_flag(bool(result & 0x80))
         return result
 
-    # TODO 重命名 _set_flag_zero _clear_flag_zero
+    # TODO 重构 _set_flag_zero _clear_flag_zero
     def _set_carry_flag(self, condition):
         v = 1 if condition else 0
         self._flag_c = v
@@ -600,6 +598,7 @@ class CPU:
         m = self._read_byte(self._operand)
         self._register_a = m
 
+        # TODO 重构 set_register_a set_register_x
         a = self._register_a
         bit7 = (a >> 7)
         self._set_zero_flag(a == 0)
@@ -679,7 +678,6 @@ class CPU:
         self._register_pc = self._operand
 
     def _jmp(self):
-
         self._register_pc = self._operand
 
     def _beq(self):
@@ -1102,5 +1100,5 @@ class CPU:
 
                 count += 1
             except Exception as e:
-                log('ERROR {}'.format(count), hex(self._opcode).upper(), name, e)
+                log('ERROR count {}'.format(count), hex(self._opcode).upper(), name, e)
                 break

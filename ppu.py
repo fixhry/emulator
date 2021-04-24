@@ -1,7 +1,15 @@
-from utils import *
-
+from enum import Enum
 import math
 from PIL import Image
+
+from memory import MemoryRead, MemoryWrite
+from utils import *
+
+
+class MirroringType(Enum):
+    Horizontal = 0
+    Vertical = 1
+    Four_Screen = 2
 
 
 width = 256
@@ -9,7 +17,7 @@ height = 240
 image = Image.new('RGB', (width, height))
 
 
-class PPU:
+class PPU(MemoryRead, MemoryWrite):
     """
     PPU 渲染流程
     http://wiki.nesdev.com/w/index.php/PPU_rendering
@@ -20,15 +28,86 @@ class PPU:
     The NES screen resolution is 320x240, thus scanlines 241 - 262 are not visible.
     """
 
-    def __init__(self, vram,):
+    def __init__(self, vram):
         self._vram = vram
-        # self._cpu = cpu
-        self._setup_palettes()
 
         self.nmi = False
         self._scanline = 0
         self._cycles = 0
         self._vblank_nmi = False
+
+        self._setup_registers()
+        self._setup_palettes()
+
+    def read_register(self, address):
+        """
+        读写寄存器，和 VRAM 的读写方法不一样
+        """
+        if address == 0x2007:
+            self._read_vram_address()
+        i = address - 0x2000
+        return self._registers[i]
+
+    def write_register(self, address, data):
+        if address == 0x2006:
+            self._write_vram_address(data)
+        i = address - 0x2000
+        self._registers[i] = data
+
+    def _setup_registers(self):
+        self._registers = [0] * 8
+        # 用来模拟 2006 2007 的读写操作
+        self._vram_cache = 0
+        self._address_cache = []
+
+    def _is_dummy_read(self):
+        return len(self._address_cache) == 2
+
+    def _update_vram_address(self):
+        """
+        每次从 0x2007 真正读出数据都要更新 0x2006 的地址
+        """
+        a = self.read_register(0x2000)
+        i = 1 if ((a >> 2) & 1) == 0 else 32
+        value = self.read_register(0x2006) + i
+        self.write_register(0x2006, value)
+
+    def _write_vram_address(self, byte):
+        """
+        CPU 写地址到 0x2006
+        """
+        self._address_cache.append(byte)
+
+    def _read_vram_address(self):
+        """
+        CPU 从 0x2007 读数据
+        """
+        if self._is_dummy_read():
+            d = self._vram_cache
+
+            high, low = self._address_cache
+            real_address = (high << 8) + low
+            self._address_cache = []
+            self._vram_cache = self.read_byte(real_address)
+            self.write_register(0x2007, self._vram_cache)
+
+            self._update_vram_address()
+
+            return d
+        else:
+            return self._vram_cache
+
+    def _read(self, address):
+        return self._vram.read_byte(address)
+
+    def read_word(self, address):
+        raise RuntimeError('方法调用错误 PPU.read_word address {}'.format(hex(address)))
+
+    def _write(self, address, data):
+        self._vram.write_byte(address, data)
+
+    def write_word(self, address, data):
+        raise RuntimeError('方法调用错误 PPU.write_word address {} data {}'.format(hex(address), hex(data)))
 
     @property
     def vblank_nmi(self):
