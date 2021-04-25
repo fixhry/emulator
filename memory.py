@@ -71,16 +71,35 @@ class VRAM(MemoryRead, MemoryWrite):
         pattern table 1
     """
     def __init__(self, chr_data):
-        self._data = [*chr_data]
-        self._setup_vram()
-
-    def _setup_vram(self):
-        self._data += ([0] * 0x2000)
+        self._pattern_tables = [*chr_data]  # 8KB
+        self._name_tables = [0] * 0x1000    # 4KB
+        self._palettes = [0] * 0x20
 
     def _read(self, address):
-        # TODO Mirror
-        return self._data[address]
+        address &= 0x3FFF                        # 映射 0x4000 - 0xFFFF 到 0x0000 - 0x3FFF
+        if 0x3F00 <= address:
+            a = (address & 0x3F1F) - 0x3F00      # 映射 0x3F20 - 0x4000 到 0x3F00 - 0x3F1F
+            return self._palettes[a]
+        elif 0x2000 <= address:
+            if 0x3000 <= address:
+                a = (address - 0x1000) - 0x2000  # 映射 0x3000 - 0x3F00 到 0x2000 - 0x2EFF
+            else:
+                a = (address - 0x2000)
+            return self._name_tables[a]
+        else:
+            return self._pattern_tables[address]
 
     def _write(self, address, data):
-        self._data[address] = data
+        address &= 0x3FFF                        # 映射 0x4000 - 0xFFFF 到 0x0000 - 0x3FFF
+        if 0x3F00 <= address:
+            a = (address & 0x3F1F) - 0x3F00      # 映射 0x3F20 - 0x4000 到 0x3F00 - 0x3F1F
+            self._palettes[a] = data
+        elif 0x2000 <= address:
+            if 0x3000 <= address:
+                a = (address - 0x1000) - 0x2000  # 映射 0x3000 - 0x3F00 到 0x2000 - 0x2EFF
+            else:
+                a = (address - 0x2000)
+            self._name_tables[a] = data
+        else:
+            self._pattern_tables[address] = data
 
