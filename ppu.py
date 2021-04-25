@@ -38,7 +38,6 @@ class PPU(MemoryRead, MemoryWrite):
         self._vblank_nmi = False
 
         self._setup_registers()
-        self._setup_palettes()
 
         self._bus = None
 
@@ -122,22 +121,8 @@ class PPU(MemoryRead, MemoryWrite):
     def _set_vblank_nmi(self):
         self._vblank_nmi = True
 
-    def _setup_palettes(self):
-        """
-        the image palette ($3F00-$3F0F) and the sprite palette ($3F10-$3F1F). The
-        image palette shows the colours currently available for background tiles. The sprite palette
-        shows the colours currently available for sprites
-        """
-        self.palettes = []
-
     def draw_tail(self, position, data):
         x = 0
-        colors = [
-            (0, 0, 0),
-            (255, 0, 0),
-            (0, 255, 0),
-            (0, 0, 255),
-        ]
         tail_w = 8
         tail_h = 8
         while x < tail_w:
@@ -148,7 +133,7 @@ class PPU(MemoryRead, MemoryWrite):
                 c1 = (byte_low >> (7 - y)) & 1
                 c2 = (byte_high >> (7 - y)) & 1
                 pixel = (c2 << 1) + c1
-                color = colors[pixel]
+                color = self._vram.palettes[pixel]
                 x1, y1 = position
                 x2 = x1 + x
                 y2 = y1 + y
@@ -193,8 +178,10 @@ class PPU(MemoryRead, MemoryWrite):
 
     def draw_pattern_table(self):
         i = 0
-        while i < 960:
-            data = self._vram.pattern_tables[i:i+16]
+        while i < 512:
+            start = i * 16
+            end = start + 16
+            data = self._vram.pattern_tables[start:end]
             x = (i % 32)
             y = math.floor(i / 32)
             sx = x * 8
@@ -205,34 +192,33 @@ class PPU(MemoryRead, MemoryWrite):
         image.show()
 
     def draw_tile(self, position, data):
-        # log('draw tile start position', position)
         sx, sy = position
-        x = 0
-
         colors = [
             (0, 0, 0),
             (255, 0, 0),
             (255, 255, 255),
             (135, 195, 235),
         ]
-        while x < 8:
-            byte_low = data[x]
-            byte_high = data[x + 8]
-            y = 0
-            while y < 8:
-                c1 = (byte_low >> (7 - y)) & 1
-                c2 = (byte_high >> (7 - y)) & 1
+        y = 0
+        while y < 8:
+            byte_low = data[y+8]
+            byte_high = data[y]
+            x = 0
+            while x < 8:
+                c1 = (byte_low >> (7 - x)) & 1
+                c2 = (byte_high >> (7 - x)) & 1
                 pixel = (c2 << 1) + c1
+                # color = self._vram.palettes[pixel]
                 color = colors[pixel]
                 pixel_position = (sx + x, sy + y)
+
                 # log('target position', pixel_position)
                 image.putpixel(pixel_position, color)
-                y += 1
-            x += 1
+                x += 1
+            y += 1
 
     def draw(self):
-        data = self._vram.pattern_tables[:10]
-        # self.draw_pattern_table()
+        self.draw_pattern_table()
         # self.draw_background()
 
     def tick(self, cycles):

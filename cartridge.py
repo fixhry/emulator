@@ -118,7 +118,7 @@ class Cartridge(MemoryRead):
 
     def _setup_rom(self):
         d = self._file_data
-        prg_size = 16 * 1024
+        prg_size = 16 * 1024 * self.prg_banks
         self._prg_rom = d[16:prg_size + 16]
         self._chr_rom = d[16 + prg_size:]
 
