@@ -42,21 +42,28 @@ class CPU:
         following actions:
     """
 
-    def __init__(self, bus):
-        self._bus = bus
+    def __init__(self):
         self._setup_instruction_set()
         self._setup_registers()
         self._setup_status_flags()
+        self._bus = None
 
         # 操作数
         self._opcode = None
         self._operand = None
         self._cycles = 7
-        # 执行当前指令需要消耗的 CPU 周期 用于和 PPU 同步
+        # 执行当前指令需要消耗的 CPU 周期
         self._cycles_costs = 0
-        
+        self._current_instruction = None
+        # debug
+        self.debug = True
         self._count = 0
 
+    @property
+    def cycles(self):
+        return self._cycles
+
+    # TODO reset nmi 中断 DMA
     @property
     def instruction_set(self):
         """
@@ -990,33 +997,48 @@ class CPU:
 
         self._register_pc = self._stack_pop_word()
 
-    def tick(self):
-        if self._cycles_costs == 0:
-            self._emulate_once()
-        else:
-            self._tick()
-
-    def _emulate_once(self):
-        self._opcode_from_memory()
-
-        execute_instruction, fetch_operand, name, mode, i_bytes, cycles = self._instruction_set[self._opcode]
-
-        fetch_operand()
-
-        execute_instruction()
+    def tick(self, cycles):
         self._cycles += cycles
+        self._bus.tick(cycles)
+
+    def connect_to_bus(self, bus):
+        self._bus = bus
+
+    def _decode_opcode(self):
+        self._current_instruction = self._instruction_set[self._opcode]
+        execute, fetch_operand, name, mode, i_bytes, cycles = self._current_instruction
         self._cycles_costs = cycles
-        self._count += (self._cycles_costs * 3)
-        log('cpu cycles', self._cycles, 'count', self._count)
+        self._fetch_operand = fetch_operand
+        self._execute = execute
+
+    def _execute_instruction(self):
+        self._fetch_operand()
+        self._execute()
+
+    def emulate_once(self):
+        self._opcode_from_memory()
+        self._decode_opcode()
+        if self.debug:
+            self.debug_nestest()
+        self._execute_instruction()
+        self._update_clock_cycles(self._cycles_costs)
+        # 同步 ppu
+        self._bus.tick(self._cycles_costs)
 
     def _tick(self):
-        self._cycles_costs += 1
         self._cycles += 1
 
-    def handle_interrupt(self):
-        log('CPU handle_interrupt')
+    def _update_clock_cycles(self, cycles):
+        self._cycles += cycles
 
-    def debug_nestest(self, count, pc):
+    def handle_vblank_interrupt(self):
+        self._stack_push_word(self._register_pc)
+        self._stack_push_byte(self.status | 0b00010000)
+        self._set_interrupt_disabled_flag(True)
+        self._register_pc = self._read_word(0xFFFA)
+        self._bus.tick(2)
+
+    def debug_nestest(self):
         ppu_ctrl_1 = self._read_byte(0x2000)
         ppu_ctrl_2 = self._read_byte(0x2001)
         ppu_status = self._read_byte(0x2002)
@@ -1031,8 +1053,10 @@ class CPU:
         spr_dma = self._read_byte(0x4014)
         *others, cycles = self._instruction_set[self._opcode]
         s = self._cycles
+        i = self._count
+        self._count += 1
         output2 = [
-            pc,
+            self._register_pc,
             self._opcode,
             self._register_a,
             self._register_x,
@@ -1043,7 +1067,7 @@ class CPU:
             # ppu_ctrl_2,
             # s,
         ]
-        expect2 = log_list[count]
+        expect2 = log_list[i]
         tail = expect2[-1]
         expect2.pop()
         expect2.pop()
@@ -1058,47 +1082,19 @@ class CPU:
         #     vram_address,
         #     vram_io,
         # ])
-        # if expect2 != output2:
-        log('<{}>'.format(count))
-        log([hex(o) for o in output2])
-        log([hex(o) for o in expect2])
-            # assert False
+        if expect2 != output2:
+            log('<{}>'.format(i))
+            log([hex(o) for o in output2])
+            log([hex(o) for o in expect2])
+            assert False
 
     def _opcode_from_memory(self):
         self._opcode = self._read_byte(self._register_pc)
 
-    # 取指令 寻址 执行
-    def _exec(self):
-        pass
-
-    # def tick(self):
-    #     if self._cycles_costs == 0:
-    #         self._exec()
-    #     else:
-    #         self._cycles_costs -= 1
-
     def run(self):
-        """
-        TODO 目前逻辑上还不太通顺的点
-        1. pc 的自增应该在当前指令执行完成后，取下一条指令前单独用一个函数执行?
-        2. 执行指令的逻辑有点奇怪
-        """
-
-        count = 0
         while True:
             try:
-                self._opcode_from_memory()
-                execute_instruction, fetch_operand, name, mode, i_bytes, cycles = self._instruction_set[self._opcode]
-                pc = self._register_pc
-                self.debug_nestest(count, pc)
-
-                fetch_operand()
-
-                execute_instruction()
-                self._cycles += cycles
-                self._cycles_costs = cycles
-
-                count += 1
+                self.emulate_once()
             except Exception as e:
-                log('ERROR count {}'.format(count), hex(self._opcode).upper(), name, e)
+                log('ERROR count {}'.format(self._count-1), hex(self._opcode).upper(), self._current_instruction[3], e)
                 break

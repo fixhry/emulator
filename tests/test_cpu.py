@@ -15,11 +15,11 @@ def setup_bus():
     vram = VRAM(cartridge.chr_rom)
     IO_registers = RAM(0x20)
     ppu = PPU(vram)
-    bus = Bus(ppu, ram, vram, sram, cartridge, IO_registers)
-    return bus, vram, ppu
+    cpu = CPU()
+    bus = Bus(cpu, ppu, ram, vram, sram, cartridge, IO_registers)
+    return cpu
 
 
 def test_exec():
-    bus, vram, ppu = setup_bus()
-    cpu = CPU(bus)
+    cpu = setup_bus()
     cpu.run()

@@ -5,20 +5,34 @@ class Bus(MemoryRead, MemoryWrite):
     """
     CPU 数据总线
     """
-    def __init__(self, ppu, ram, vram, sram, cartridge, IO_registers):
+    def __init__(self, cpu, ppu, ram, vram, sram, cartridge, IO_registers):
+        self._cpu = cpu
+        self._cpu.connect_to_bus(self)
         self._ppu = ppu
+        self._ppu.connect_to_bus(self)
         self._ram = ram
         self._vram = vram
         self._sram = sram
         self._cartridge = cartridge
         self._IO_registers = IO_registers
 
+    def tick(self, cycles):
+        """
+        CPU 通知 PPU APU 执行，用于同步时钟周期
+
+        :param cycles: CPU 执行指令后消耗的时钟周期
+        """
+        self._ppu.tick(cycles)
+
+    def trigger_vblank(self):
+        self._cpu.handle_vblank_interrupt()
+
     def _read(self, address):
         if 0x8000 <= address:
             a = address - 0x8000
             return self._cartridge.read_byte(a)
         elif 0x6000 <= address:
-            self._sram.read_byte(address - 0x6000)
+            return self._sram.read_byte(address - 0x6000)
         elif 0x4020 <= address:
             raise NotImplementedError('Expansion ROM 0x4020 - 0x6000 未实现')
         elif 0x4000 <= address:

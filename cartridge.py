@@ -1,8 +1,5 @@
-from enum import Enum
-
-from utils import *
 from ppu import MirroringType
-from memory import MemoryRead, MemoryWrite
+from memory import MemoryRead
 
 
 class Cartridge(MemoryRead):

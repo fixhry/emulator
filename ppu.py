@@ -22,6 +22,7 @@ class PPU(MemoryRead, MemoryWrite):
     PPU 渲染流程
     http://wiki.nesdev.com/w/index.php/PPU_rendering
     https://bugzmanov.github.io/nes_ebook/chapter_6_1.html
+    http://wiki.nesdev.com/w/index.php/PPU_rendering#Line-by-line_timing
 
     The PPU renders 262 scanlines per frame. (0 - 240 are visible scanlines, the rest are so-called vertical overscan)
     Each scanline lasts for 341 PPU clock cycles, with each clock cycle producing one pixel. (the first 256 pixels are visible, the rest is horizontal overscan)
@@ -39,6 +40,8 @@ class PPU(MemoryRead, MemoryWrite):
         self._setup_registers()
         self._setup_palettes()
 
+        self._bus = None
+
     def read_register(self, address):
         """
         读写寄存器，和 VRAM 的读写方法不一样
@@ -53,6 +56,18 @@ class PPU(MemoryRead, MemoryWrite):
             self._write_vram_address(data)
         i = address - 0x2000
         self._registers[i] = data
+
+    def write_word(self, address, data):
+        raise RuntimeError('方法调用错误 PPU.write_word address {} data {}'.format(hex(address), hex(data)))
+
+    def read_word(self, address):
+        raise RuntimeError('方法调用错误 PPU.read_word address {}'.format(hex(address)))
+
+    def _read(self, address):
+        return self._vram.read_byte(address)
+
+    def _write(self, address, data):
+        self._vram.write_byte(address, data)
 
     def _setup_registers(self):
         self._registers = [0] * 8
@@ -96,18 +111,6 @@ class PPU(MemoryRead, MemoryWrite):
             return d
         else:
             return self._vram_cache
-
-    def _read(self, address):
-        return self._vram.read_byte(address)
-
-    def read_word(self, address):
-        raise RuntimeError('方法调用错误 PPU.read_word address {}'.format(hex(address)))
-
-    def _write(self, address, data):
-        self._vram.write_byte(address, data)
-
-    def write_word(self, address, data):
-        raise RuntimeError('方法调用错误 PPU.write_word address {} data {}'.format(hex(address), hex(data)))
 
     @property
     def vblank_nmi(self):
@@ -232,35 +235,42 @@ class PPU(MemoryRead, MemoryWrite):
         # self.draw_pattern_table()
         # self.draw_background()
 
-    def tick(self):
-        self._cycles += 1
+    def tick(self, cycles):
+        """
+        1 frame 262 scanline (0 ~ 261)
+        1 scanline 341 PPU cycles
+        1 cycle 1 pixel
+        """
+        self._cycles += (cycles * 3)
         if self._cycles % 341 == 0:
             self._scanline += 1
 
-    def _trigger_vlank(self):
-        self._set_vblank_nmi()
+            if self._scanline == 241:
+                self._trigger_vlank()
 
-    def run(self):
+            if self._scanline >= 261:
+                self._scanline = 0
+                self._clear_vlank_status()
+
+    def connect_to_bus(self, bus):
+        self._bus = bus
+
+    def _set_vlank_status(self):
         """
-        PPU 渲染一帧画面需要做的事
-        CYCLE_0
-        FETCH_NAMETABLE,
-        STORE_NAMETABLE,
-        FETCH_ATTRIBUTE,
-        STORE_ATTRIBUTE,
-        FETCH_PATTERN_LOW,
-        STORE_PATTERN_LOW,
-        FETCH_PATTERN_HIGH,
-        STORE_PATTERN_HIGH,
-        WASTE_NAMETABLE_BYTE,
-        POST_RENDER_SCANLINE,
-        LOAD_SPRITES,
-        FIRST_VBLANK_SCANLINE,
-        IDLE_VBLANK_SCANLINES,
-        PRE_RENDER_SCANLINE_START,
-        LOAD_VERTICAL_SCROLL,
-        WAIT_FOR_SCANLINE_TILE_FETCH,
+        The VBlank flag of the PPU is set at tick 1 (the second tick) of scanline 241
         """
-        if self._scanline == 241:
-            self._trigger_vlank()
-        self.tick()
+        status = self.read_register(0x2000)
+        updated = status | 0x80
+        self.write_register(0x2000, updated)
+
+    def _clear_vlank_status(self):
+        """
+        The VBlank flag of the PPU is set at tick 1 (the second tick) of scanline 241
+        """
+        status = self.read_register(0x2000)
+        updated = status & 0x7F
+        self.write_register(0x2000, updated)
+
+    def _trigger_vlank(self):
+        self._set_vlank_status()
+        self._bus.trigger_vblank()
