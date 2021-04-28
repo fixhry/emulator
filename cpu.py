@@ -44,7 +44,6 @@ class CPU:
 
     def __init__(self):
         self._setup_instruction_set()
-        self._setup_registers()
         self._setup_status_flags()
         self._bus = None
 
@@ -63,7 +62,6 @@ class CPU:
     def cycles(self):
         return self._cycles
 
-    # TODO reset nmi 中断 DMA
     @property
     def instruction_set(self):
         """
@@ -308,9 +306,7 @@ class CPU:
         Reset interrupts are triggered when the system first starts and when the user presses the
         reset button. When a reset occurs the system jumps to the address located at $FFFC and $FFFD
         """
-        # self._register_pc = self._read_word(0xFFFC)
-        self._register_pc = 0xC000
-        # log('init pc', hex(self._register_pc))
+        self._register_pc = self._read_word(0xFFFC)
         self._register_sp = 0xFD
         self._register_a = 0x00
         self._register_x = 0x00
@@ -1003,6 +999,7 @@ class CPU:
 
     def connect_to_bus(self, bus):
         self._bus = bus
+        self._setup_registers()
 
     def _decode_opcode(self):
         self._current_instruction = self._instruction_set[self._opcode]
@@ -1018,12 +1015,14 @@ class CPU:
     def emulate_once(self):
         self._opcode_from_memory()
         self._decode_opcode()
-        if self.debug:
-            self.debug_nestest()
+        # if self.debug:
+        #     self.debug_nestest()
+        # log(self._current_instruction[-4])
         self._execute_instruction()
         self._update_clock_cycles(self._cycles_costs)
         # 同步 ppu
-        self._bus.tick(self._cycles_costs)
+        self._bus.sync(self._cycles)
+        self._cycles = 0
 
     def _tick(self):
         self._cycles += 1
@@ -1031,7 +1030,7 @@ class CPU:
     def _update_clock_cycles(self, cycles):
         self._cycles += cycles
 
-    def handle_vblank_interrupt(self):
+    def handle_nmi(self):
         self._stack_push_word(self._register_pc)
         self._stack_push_byte(self.status | 0b00010000)
         self._set_interrupt_disabled_flag(True)
@@ -1039,13 +1038,13 @@ class CPU:
         self._bus.tick(2)
 
     def debug_nestest(self):
-        ppu_ctrl_1 = self._read_byte(0x2000)
-        ppu_ctrl_2 = self._read_byte(0x2001)
-        ppu_status = self._read_byte(0x2002)
-        spr_ram_address = self._read_byte(0x2003)
-        spr_ram_io = self._read_byte(0x2004)
-        vram_address = self._read_word(0x2005)
-        vram_io = self._read_byte(0x2007)
+        # ppu_ctrl_1 = self._ppu.control_1
+        # ppu_ctrl_2 = self._ppu.control_2
+        # ppu_status = self._read_byte(0x2002)
+        # spr_ram_address = self._read_byte(0x2003)
+        # spr_ram_io = self._read_byte(0x2004)
+        # vram_address = self._read_word(0x2005)
+        # vram_io = self._read_byte(0x2007)
         """
         Writes cause a DMA transfer to occur from CPU memory at
         address $100 x n, where n is the value written, to SPR-RAM. 
@@ -1068,11 +1067,11 @@ class CPU:
             # s,
         ]
         expect2 = log_list[i]
-        tail = expect2[-1]
+        cycles = expect2[-1]
         expect2.pop()
         expect2.pop()
         expect2.pop()
-        # expect2.append(tail)
+        # expect2.append(cycles)
         # log('ppu', [
         #     ppu_ctrl_1,
         #     ppu_ctrl_2,

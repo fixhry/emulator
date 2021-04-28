@@ -1,5 +1,5 @@
 from ppu import MirroringType
-from memory import MemoryRead
+from memory.read import MemoryRead
 
 
 class Cartridge(MemoryRead):

@@ -1,4 +1,4 @@
-from memory import *
+from memory.ram import RAM
 
 
 def test_ram():

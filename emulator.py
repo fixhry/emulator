@@ -1,9 +1,10 @@
-from bus import Bus
 from cpu import CPU
 from ppu import PPU
+from memory.ram import RAM
+from bus.cpu_bus import CPUBus
+from bus.ppu_bus import PPUBus
 from cartridge import Cartridge
-from memory import RAM, VRAM
-from utils import *
+from memory.palettes import palettes
 
 
 class Emulator:
@@ -13,19 +14,24 @@ class Emulator:
     """
     def __init__(self, rom_path):
         self._rom_path = rom_path
+        self._cartridge = Cartridge(self._rom_path)
+        self._setup_cpu_bus()
+        self._setup_ppu_bus()
         self._cycles = 0
-        self._setup()
+        self._counter = 0
 
-    def _setup(self):
-        cartridge = Cartridge(self._rom_path)
-        size = cartridge.sram_bank * 8 * 1024
+    def _setup_cpu_bus(self):
+        size = self._cartridge.sram_bank * 8 * 1024
         sram = RAM(size)
         ram = RAM(0x0800)
-        vram = VRAM(cartridge.chr_rom)
         IO_registers = RAM(0x20)
-        self._ppu = PPU(vram)
+        self._ppu = PPU()
         self._cpu = CPU()
-        self._bus = Bus(self._cpu, self._ppu, ram, vram, sram, cartridge, IO_registers)
+        self._cpu_bus = CPUBus(self._cpu, self._ppu, ram, sram, self._cartridge, IO_registers)
+
+    def _setup_ppu_bus(self):
+        vram = RAM(0x1000)  # 4K
+        self._ppu_bus = PPUBus(self._ppu, vram, self._cartridge, palettes)
 
     def power(self):
         pass
@@ -35,5 +41,9 @@ class Emulator:
         Catch-up
         http://wiki.nesdev.com/w/index.php/Catch-up
         """
-        while True:
+        while self._counter <= 10000:
             self._cpu.emulate_once()
+            self._counter += 1
+            # log(self._counter)
+        # self._ppu.draw_background()
+        self._ppu.draw_pattern_table()
