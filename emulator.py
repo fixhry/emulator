@@ -41,9 +41,9 @@ class Emulator:
         Catch-up
         http://wiki.nesdev.com/w/index.php/Catch-up
         """
-        while self._counter <= 10000:
+        while self._counter <= 300000:
             self._cpu.emulate_once()
             self._counter += 1
             # log(self._counter)
-        # self._ppu.draw_background()
-        self._ppu.draw_pattern_table()
+        self._ppu.draw_background()
+        # self._ppu.draw_pattern_table()

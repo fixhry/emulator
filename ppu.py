@@ -42,6 +42,10 @@ class PPU:
         self._cpu_bus = None
         self._ppu_bus = None
 
+    """
+    寄存器
+    """
+
     @property
     def control(self):
         return self._registers[0]
@@ -57,6 +61,10 @@ class PPU:
     @property
     def oam_address(self):
         return self._registers[3]
+
+    """
+    标志位
+    """
 
     @property
     def show_background(self):
@@ -109,7 +117,6 @@ class PPU:
         """
         CPU 从 0x2007 读数据
         """
-        # FIXME 这里的地址是相对 name tables 的偏移?
         v = self._register['v']
         last_cache = self._vram_cache
         if v >= 0x3F00:
@@ -123,7 +130,8 @@ class PPU:
 
     def _write_ppu_data(self, data):
         # FIXME 这里的地址是相对 name tables 的偏移?
-        address = self._register['v']
+        address = self._register['v'] + 0x2000
+        # log('v', hex(self._register['v']), 'address', hex(address))
         self._ppu_bus.write_byte(address, data)
         self._update_vram_address()
 
@@ -275,12 +283,6 @@ class PPU:
     def write_spr_ram(self, address, data):
         self._spr_ram.write_byte(address, data)
 
-    def write_word(self, address, data):
-        raise RuntimeError('方法调用错误 PPU.write_word address {} data {}'.format(hex(address), hex(data)))
-
-    def read_word(self, address):
-        raise RuntimeError('方法调用错误 PPU.read_word address {}'.format(hex(address)))
-
     def draw_tail(self, position, data):
         x = 0
         tail_w = 8
@@ -301,38 +303,6 @@ class PPU:
                 image.putpixel(p, color)
                 y += 1
             x += 1
-
-    def fomatted_nametable(self, nametable):
-        z = 0
-        t = nametable
-
-        o = []
-
-        i = 0
-        while i < 240:
-            j = 0
-            while j < 256:
-                # y
-                o.append(i - 1)
-
-                # index
-                k = t[z]
-
-                o.append(k)
-                z += 1
-
-                # tmp
-                o.append(0)
-
-                # x
-                o.append(j)
-                j += 8
-            i += 8
-        return o
-
-    # def draw_sprite(self, oam_data, sprite_data):
-    #     t = nametable()
-
 
     def sprite_color_from_table(self, index, table):
         # 大图块对应的字节
@@ -361,22 +331,19 @@ class PPU:
         """
         pattern_table = self._pattern_table_from_vram()
         name_table = self._name_table_from_vram()
-        n = self.fomatted_nametable(name_table)
-        log('name_table', name_table)
-        property_table = name_table[-64:]
-        # i = 0
-        # while i < 960:
-        #     start = i * 16
-        #     end = start + 16
-        #     data = self._vram.pattern_tables[start:end]
-        #     x = (i % 32)
-        #     y = math.floor(i / 32)
-        #     sx = x * 8
-        #     sy = y * 8
-        #     # log('tile index', x, y)
-        #     self.draw_tile((sx, sy), data)
-        #     i += 1
-        # image.show()
+        # log('name_table', name_table)
+        # attribute_table = name_table[-64:]
+        i = 0
+        while i < 960:
+            tail_index = name_table[i]
+            start = tail_index * 16
+            end = start + 16
+            tail_data = pattern_table[start:end]
+            tail_x = (i % 32) * 8
+            tail_y = math.floor(i / 32) * 8
+            self.draw_tile((tail_x, tail_y), tail_data)
+            i += 1
+        image.show()
 
     def draw_pattern_table(self):
         i = 0

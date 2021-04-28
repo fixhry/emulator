@@ -53,6 +53,10 @@ class Cartridge(MemoryRead):
     def sram_bank(self):
         return self._sram_banks
 
+    @property
+    def mirroring_type(self):
+        return self._mirroring_type
+
     def _load_nes_file(self):
         with open(self._file_name, 'rb') as f:
             self._file_data = list(f.read())

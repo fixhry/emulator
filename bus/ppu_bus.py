@@ -1,5 +1,6 @@
 from memory.read import MemoryRead
 from memory.write import MemoryWrite
+from ppu import MirroringType
 
 
 class PPUBus(MemoryRead, MemoryWrite):
@@ -21,7 +22,7 @@ class PPUBus(MemoryRead, MemoryWrite):
                 a = (address - 0x1000) - 0x2000     # 映射 0x3000 - 0x3F00 到 0x2000 - 0x2EFF
             else:
                 a = (address - 0x2000)
-            self._vram[a] = data
+            self._vram.write_byte(a, data)
         else:
             raise RuntimeError('ppu write address {} data {}'.format(hex(address), hex(data)))
 
@@ -35,9 +36,20 @@ class PPUBus(MemoryRead, MemoryWrite):
                 a = (address - 0x1000) - 0x2000         # 映射 0x3000 - 0x3F00 到 0x2000 - 0x2EFF
             else:
                 a = (address - 0x2000)
-            return self._vram[a]
+            a = self._address_from_mirror_type(a)
+            return self._vram.read_byte(a)
         else:
             return self._cartridge.chr_rom[address]
+
+    def _address_from_mirror_type(self, address):
+        t = self._cartridge.mirroring_type
+        if t is MirroringType.Horizontal:
+            return (address & 0b0010_0011_1111_1111) | \
+                   (0b0000_0100_0000_0000 if address & 0b0000_1000_0000_0000 else 0)
+        elif t is MirroringType.Vertical:
+            return address & 0x27FF
+        elif t is MirroringType.Four_Screen:
+            return address
 
     def read_name_table(self, address):
         address -= 0x2000
