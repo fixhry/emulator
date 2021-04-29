@@ -1000,10 +1000,11 @@ class CPU:
         self._setup_registers()
 
         self._cycles = 0
+        self.tick(8)
 
     def tick(self, cycles):
         self._cycles += cycles
-        self._bus.tick(cycles)
+        self._bus.sync(cycles)
 
     def connect_to_bus(self, bus):
         self._bus = bus
@@ -1043,7 +1044,7 @@ class CPU:
         self._stack_push_byte(self.status | 0b00010000)
         self._set_interrupt_disabled_flag(True)
         self._register_pc = self._read_word(0xFFFA)
-        self._bus.tick(2)
+        self._bus.sync(2)
 
     def debug_nestest(self):
         # ppu_ctrl_1 = self._ppu.control_1

@@ -20,6 +20,8 @@ class Emulator:
         self._cycles = 0
         self._counter = 0
 
+        self._cpu.reset()
+
     def _setup_cpu_bus(self):
         size = self._cartridge.sram_bank * 8 * 1024
         sram = RAM(size)
@@ -43,7 +45,7 @@ class Emulator:
         Catch-up
         http://wiki.nesdev.com/w/index.php/Catch-up
         """
-        while self._counter <= 200000:
+        while self._counter <= 100000:
             self._cpu.emulate_once()
             self._counter += 1
             # log(self._counter)
