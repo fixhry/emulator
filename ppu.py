@@ -18,6 +18,50 @@ height = 240
 image = Image.new('RGB', (width, height))
 
 
+nametable = [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 240, 241, 36, 36, 36, 36, 224, 225, 225,
+             226, 224, 225, 225, 226, 224, 226, 36, 224, 226, 36, 224, 225, 225, 226, 224, 225, 225, 226, 224, 236, 36,
+             224, 226, 36, 36, 36, 36, 36, 227, 227, 227, 229, 227, 227, 227, 229, 227, 229, 36, 227, 229, 36, 227, 227,
+             227, 229, 227, 227, 227, 229, 227, 227, 243, 227, 229, 36, 36, 36, 36, 36, 227, 228, 227, 231, 227, 228,
+             227, 229, 227, 229, 36, 227, 229, 36, 227, 228, 227, 229, 227, 228, 227, 229, 227, 227, 227, 227, 229, 36,
+             36, 36, 36, 36, 227, 227, 227, 226, 227, 227, 227, 229, 227, 229, 36, 227, 229, 36, 227, 227, 227, 229,
+             227, 227, 227, 229, 227, 227, 227, 227, 229, 36, 36, 36, 36, 36, 227, 228, 227, 229, 227, 242, 227, 229,
+             227, 227, 226, 227, 227, 226, 227, 227, 227, 229, 227, 227, 227, 229, 227, 242, 227, 227, 229, 36, 36, 36,
+             36, 36, 230, 227, 227, 231, 235, 36, 230, 231, 230, 227, 231, 230, 227, 231, 230, 227, 227, 231, 230, 227,
+             227, 231, 235, 36, 230, 227, 231, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 224, 225,
+             225, 226, 224, 226, 224, 225, 225, 226, 232, 36, 224, 226, 224, 225, 225, 226, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 227, 227, 227, 231, 227, 229, 227, 245, 246, 231, 227, 243, 227, 229, 230, 227,
+             227, 231, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 227, 227, 239, 36, 227, 229, 227, 36, 36,
+             36, 227, 227, 227, 229, 36, 227, 229, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 227, 227,
+             225, 234, 227, 229, 227, 233, 227, 226, 227, 227, 227, 229, 36, 227, 229, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 227, 227, 239, 36, 227, 229, 227, 243, 227, 229, 227, 242, 227, 229, 36, 227,
+             229, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 230, 231, 36, 36, 230, 231, 230, 231, 230,
+             231, 235, 36, 230, 231, 36, 230, 231, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 10, 36, 36, 1, 37, 25, 21, 10, 34, 14, 27, 36, 16, 10, 22, 14, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 11, 36, 36, 2, 37, 25, 21, 10, 34, 14, 27, 36, 16,
+             10, 22, 14, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 12, 36, 36,
+             11, 10, 21, 21, 24, 24, 23, 36, 36, 29, 27, 18, 25, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 244, 1, 9, 8, 4, 36, 23, 18, 23,
+             29, 14, 23, 13, 24, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+             36, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+
+oam = [240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 140, 168, 34, 44, 140, 169, 34, 52, 148, 170, 34, 48, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, ]
+
+
 class PPU:
     """
     PPU 渲染流程
@@ -48,19 +92,19 @@ class PPU:
 
     @property
     def control(self):
-        return self._registers[0]
+        return self._control
 
     @property
     def mask(self):
-        return self._registers[1]
+        return self._mask
 
     @property
     def status(self):
-        return self._registers[2]
+        return self._status
 
     @property
     def oam_address(self):
-        return self._registers[3]
+        return self._oam_address
 
     """
     标志位
@@ -91,16 +135,24 @@ class PPU:
         return (self.status & 0x20) > 0
 
     def _setup_registers(self):
-        self._registers = [0] * 8
-        self._register = dict(
-            v=0,
-            t=0,
-            x=0,
-            w=0,
-        )
+        # 0x2000
+        self._control = 0
+        # 0x2001
+        self._mask = 0
+        # 0x2002
+        self._status = 0
+        # 0x2003
+        self._oam_address = 0
+        # 0x2007
+        self._ppu_data = 0
+        # ppu 内部寄存器
+        self._vram_address = 0          # 15 bit
+        self._tmp_vram_address = 0      # 15 bit
+        self._fine_x = 0                # 3 bit
+        self._write_toggle = 0          # 1 bit
+
         # 用来模拟 2006 2007 的读写操作
         self._vram_cache = 0
-        self._address_cache = []
         # Least significant bits previously written into a PPU register
         self._prev_data = 0
 
@@ -108,88 +160,89 @@ class PPU:
         """
         每次从 0x2007 读/写数据都要更新 0x2006 的地址
         """
-        a = self.read_register(0x2000)
-        i = 1 if ((a >> 2) & 1) == 0 else 32
-        self._register['v'] += i
-        self._register['v'] &= 0x7FFF
+        i = 1 if ((self._control >> 2) & 1) == 0 else 32
+        self._vram_address += i
+        self._vram_address &= 0x7FFF
 
     def _read_ppu_data(self):
         """
         CPU 从 0x2007 读数据
         """
-        v = self._register['v']
         last_cache = self._vram_cache
-        if v >= 0x3F00:
-            self._vram_cache = self._ppu_bus.read_byte(v)
+        if self._vram_address >= 0x3F00:
+            self._vram_cache = self._ppu_bus.read_byte(self._vram_address)
             self._update_vram_address()
             return self._vram_cache
         else:
             # 返回的是上一次读到的 vram 数据
-            self._vram_cache = self._ppu_bus.read_byte(v)
+            self._vram_cache = self._ppu_bus.read_byte(self._vram_address)
+            self._update_vram_address()
             return last_cache
 
     def _write_ppu_data(self, data):
         # FIXME 这里的地址是相对 name tables 的偏移?
-        address = self._register['v'] + 0x2000
-        # log('v', hex(self._register['v']), 'address', hex(address))
+        # address = self._vram_address + 0x2000
+        address = self._vram_address
+        # log('v', hex(self._vram_address), 'address', hex(address))
         self._ppu_bus.write_byte(address, data)
         self._update_vram_address()
 
     def _write_ppu_address(self, data):
-        t = self._register['t']
-        if self._register['w'] == 0:
-            self._register['t'] = t & 0x80FF | (data & 0x3F) << 8
+        t = self._tmp_vram_address
+        if self._write_toggle == 0:
+            self._tmp_vram_address = t & 0x80FF | (data & 0x3F) << 8
+            self._write_toggle = 1
         else:
-            self._register['t'] = t & 0xFF00 | data
-            self._register['v'] = self._register['t']
-            self._register['w'] = 0
+            self._tmp_vram_address = t & 0xFF00 | data
+            self._vram_address = self._tmp_vram_address
+            self._write_toggle = 0
 
     def _set_vblank_status(self):
         """
         The VBlank flag of the PPU is set at tick 1 (the second tick) of scanline 241
         """
         updated = self.status | 0x80
-        self.write_register(0x2002, updated)
+        self._status = updated
 
     def _clear_vblank_status(self):
         """
         The VBlank flag of the PPU is set at tick 1 (the second tick) of scanline 241
         """
         updated = self.status & 0x7F
-        self.write_register(0x2002, updated)
+        self._status = updated
 
     def _set_sprite_0_hit(self):
         updated = self.status | 0x40
-        self.write_register(0x2002, updated)
+        self._status = updated
 
     def _clear_sprite_0_hit(self):
         updated = self.status & 0x40
-        self.write_register(0x2002, updated)
+        self._status = updated
 
     def _set_sprite_overflow(self):
         updated = self.status | 0x20
-        self.write_register(0x2002, updated)
+        self._status = updated
 
     def _clear_sprite_overflow(self):
         updated = self.status & 0x20
-        self.write_register(0x2002, updated)
+        self._status = updated
 
     def _trigger_nmi(self):
         self._set_vblank_status()
         self._cpu_bus.trigger_vblank()
 
     def _pattern_address_table_from_controller(self):
-        flag = (self.read_register(0x2000) >> 3) & 1
+        flag = (self._control >> 3) & 1
         address = 0x0 if flag is 0 else 0x1000
         return address
 
     def _name_table_address_from_controller(self):
-        flag = self.read_register(0x2000) & 0x3
+        flag = self._control & 0x3
         address = (0x2000, 0x2400, 0x2800, 0x2C00)[flag]
         return address
 
     def _sprite_size_from_register(self):
-        flag = (self.read_register(0x2000) >> 5) & 1
+        flag = (self._control >> 5) & 1
         size = (8, 16) if flag is 0 else (8, 16)
         return size
 
@@ -202,23 +255,32 @@ class PPU:
         return self._ppu_bus.read_pattern_table(address)
 
     def _read_ppu_status(self):
-        data = self._registers[2] | self._prev_data
+        data = self._status | self._prev_data
         self._clear_vblank_status()
-        self._register['w'] = 0
+        self._write_toggle = 0
         return data
 
-    def _write_ppu_control(self, address, data):
-        self._registers[address - 0x2000] = data
-        self._register['t'] = self._register['t'] & 0xF3FF | (data & 0x03) << 10
+    def _write_ppu_control(self, data):
+        self._control = data
+        self._tmp_vram_address = self._tmp_vram_address & 0xF3FF | (data & 0x03) << 10
+
+    def _write_ppu_mask(self, data):
+        self._mask = data
+
+    def _write_oam_address(self, data):
+        self._oam_address = data
 
     def _write_scroll(self, data):
-        if self._register['w'] == 0:
-            self._register['t'] = self._register['t'] & 0xFFE0 | data >> 3
-            self._register['x'] = data & 0x07
-            self._register['w'] = 1
+        if self._write_toggle == 0:
+            self._tmp_vram_address = self._tmp_vram_address & 0xFFE0 | data >> 3
+            self._fine_x = data & 0x07
+            self._write_toggle = 1
         else:
-            self._register['t'] = self._register['t'] & 0x0C1F | (data & 0x07) << 12 | (data & 0xF8) << 2
-            self._register['w'] = 0
+            self._tmp_vram_address = self._tmp_vram_address & 0x0C1F | (data & 0x07) << 12 | (data & 0xF8) << 2
+            self._write_toggle = 0
+
+    def _read_oam_data(self):
+        return self._spr_ram.read_byte(self._oam_address)
 
     def connect_to_ppu_bus(self, bus):
         self._ppu_bus = bus
@@ -228,18 +290,20 @@ class PPU:
 
     def read_register(self, address):
         """
-        读写寄存器，和 VRAM 的读写方法不一样
+        读写 ppu 寄存器
         """
+        if address == 0x2000:
+            return self._control
+        if address == 0x2001:
+            return self._mask
         if address == 0x2002:
-            # status
-            return self._read_ppu_status()
+            return self._status
         elif address == 0x2003:
             # OAM address
             return 0
         elif address == 0x2004:
             # OAM DATA
-            oam_address = self._register[3]
-            return self._spr_ram.read_byte(oam_address)
+            return self._read_oam_data()
         elif address == 0x2005:
             # PPU scroll
             return 0
@@ -249,60 +313,39 @@ class PPU:
         elif address == 0x2007:
             # PPU DATA
             return self._read_ppu_data()
-        else:
-            return self._registers[address - 0x2000]
 
     def write_register(self, address, data):
         data &= 0xFF
         self._prev_data = data & 0x1F
+
         if address == 0x2000:
             # ppu control
-            self._write_ppu_control(address, data)
-        # elif address == 0x2002:
-        #     # ppu status 只读
-        #     pass
+            self._write_ppu_control(data)
+        elif address == 0x2001:
+            self._write_ppu_mask(data)
+        elif address == 0x2003:
+            self._write_oam_address(data)
         elif address == 0x2004:
             # oam data
-            self._write_oam(data)
-        if address == 0x2005:
+            self._write_oam_data(data)
+        elif address == 0x2005:
             self._write_scroll(data)
-        if address == 0x2006:
+        elif address == 0x2006:
             # PPU address
             self._write_ppu_address(data)
-        if address == 0x2007:
+        elif address == 0x2007:
             # 把数据写到 vram 中
             self._write_ppu_data(data)
-        else:
-            self._registers[address - 0x2000] = data
 
-    def _write_oam(self, data):
-        self.write_spr_ram(self.oam_address, data)
+    def _write_oam_data(self, data):
+        address = self.oam_address & 0xFF
+        self.write_spr_ram(address, data)
         # 更新 oam address
-        self._registers[3] += 1
+        self._oam_address += 1
 
     def write_spr_ram(self, address, data):
+        log('write_spr_ram address {} data {}'.format(hex(address), hex(data)))
         self._spr_ram.write_byte(address, data)
-
-    def draw_tail(self, position, data):
-        x = 0
-        tail_w = 8
-        tail_h = 8
-        while x < tail_w:
-            byte_low = data[x]
-            byte_high = data[x + 8]
-            y = 0
-            while y < tail_h:
-                c1 = (byte_low >> (7 - y)) & 1
-                c2 = (byte_high >> (7 - y)) & 1
-                pixel = (c2 << 1) + c1
-                color = self._ppu_bus._palettes[pixel]
-                x1, y1 = position
-                x2 = x1 + x
-                y2 = y1 + y
-                p = (x2, y2)
-                image.putpixel(p, color)
-                y += 1
-            x += 1
 
     def sprite_color_from_table(self, index, table):
         # 大图块对应的字节
@@ -314,6 +357,22 @@ class PPU:
         index += 4
         color_index = v >> z & 0b11
         return color_index
+
+    def draw_sprite(self):
+        # TODO palette scroll 8 * 16
+        pattern_table = self._pattern_table_from_vram()
+        i = 0
+        # log('spr ram', self._spr_ram)
+        while i < self._spr_ram.size:
+            s = self._spr_ram[i:i+4]
+            # s = oam[i:i+4]
+            x = s[3]
+            y = s[0] + 1
+            tail_index = s[1] * 16
+            tail_data = pattern_table[tail_index:tail_index+16]
+            self.draw_tile((x, y), tail_data)
+            i += 4
+        image.show()
 
     def draw_background(self):
         """
@@ -331,22 +390,42 @@ class PPU:
         """
         pattern_table = self._pattern_table_from_vram()
         name_table = self._name_table_from_vram()
-        # log('name_table', name_table)
-        # attribute_table = name_table[-64:]
+        log('name_table', name_table)
+        attribute_table = name_table[-64:]
         i = 0
         while i < 960:
             tail_index = name_table[i]
+            # tail_index = nametable[i]
             start = tail_index * 16
             end = start + 16
             tail_data = pattern_table[start:end]
-            tail_x = (i % 32) * 8
-            tail_y = math.floor(i / 32) * 8
-            self.draw_tile((tail_x, tail_y), tail_data)
+            tail_x = (i % 32)
+            tail_y = math.floor(i / 32)
+            palettes = self._background_palettes_from_attribute_table(attribute_table, tail_x, tail_y)
+            self.draw_tile((tail_x*8, tail_y*8), tail_data)
             i += 1
         image.show()
 
+    def _background_palettes_from_attribute_table(self, attribute_table, x, y):
+        attr_table_idx = math.floor(x / 4) + math.floor(y / 4) * 8
+        attr_byte = attribute_table[attr_table_idx]
+        palette_index = (attr_byte >> (math.floor((x % 4) / 2) * 2 + math.floor((y % 4) / 2) * 4)) & 0b11
+        palette_start = 1 + palette_index * 4
+        return [
+            self._ppu_bus.read_byte(0x3F00),
+            self._ppu_bus.read_byte(palette_start+0x3F00),
+            self._ppu_bus.read_byte(palette_start+0x3F00+1),
+            self._ppu_bus.read_byte(palette_start+0x3F00+2),
+        ]
+
     def draw_pattern_table(self):
         i = 0
+        palettes = [
+            (0, 0, 0),
+            (255, 0, 0),
+            (0, 255, 0),
+            (0, 0, 255),
+        ]
         while i < 512:
             start = i * 16
             end = start + 16
@@ -355,18 +434,14 @@ class PPU:
             y = math.floor(i / 32)
             sx = x * 8
             sy = y * 8
-            self.draw_tile((sx, sy), data)
+            self.draw_tile((sx, sy), data, palettes)
             i += 1
         image.show()
 
-    def draw_tile(self, position, data):
+    def draw_tile(self, position, data, palettes=None):
+        if palettes is None:
+            palettes = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255)]
         sx, sy = position
-        colors = [
-            (0, 0, 0),
-            (255, 0, 0),
-            (255, 255, 255),
-            (135, 195, 235),
-        ]
         y = 0
         while y < 8:
             byte_low = data[y + 8]
@@ -376,18 +451,18 @@ class PPU:
                 c1 = (byte_low >> (7 - x)) & 1
                 c2 = (byte_high >> (7 - x)) & 1
                 pixel = (c2 << 1) + c1
-                # color = self._vram.palettes[pixel]
-                color = colors[pixel]
-                pixel_position = (sx + x, sy + y)
-
-                # log('target position', pixel_position)
-                image.putpixel(pixel_position, color)
+                color = palettes[pixel]
+                px = sx + x
+                py = sy + y
+                if px <= width and py <= height:
+                    image.putpixel((px, py), color)
                 x += 1
             y += 1
 
     def draw(self):
-        self.draw_pattern_table()
+        # self.draw_pattern_table()
         # self.draw_background()
+        self.draw_sprite()
 
     def _update_cycle(self):
         if self.vblank_occurring and \

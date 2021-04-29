@@ -4,42 +4,58 @@ from ppu import MirroringType
 
 
 class PPUBus(MemoryRead, MemoryWrite):
-    def __init__(self, ppu, vram, cartridge, palettes):
+    def __init__(self, ppu, vram, cartridge, background_palette, sprite_palette):
         self._vram = vram
         self._cartridge = cartridge
-        self._palettes = palettes
+        self._background_palette = background_palette
+        self._sprite_palette = sprite_palette
         self._ppu = ppu
         self._ppu.connect_to_ppu_bus(self)
 
     def _write(self, address, data):
-        address &= 0x3FFF                           # 映射 0x4000 - 0xFFFF 到 0x0000 - 0x3FFF
-        if 0x3F00 <= address:
-            a = (address & 0x3F1F) - 0x3F00         # 映射 0x3F20 - 0x4000 到 0x3F00 - 0x3F1F
-            self._palettes[a] = data
-        elif 0x2000 <= address:
-            # name tables
-            if 0x3000 <= address:
-                a = (address - 0x1000) - 0x2000     # 映射 0x3000 - 0x3F00 到 0x2000 - 0x2EFF
-            else:
-                a = (address - 0x2000)
+        address &= 0x3FFF
+
+        if address < 0x2000:
+            raise NotImplementedError('ppu write address {} data {}'.format(hex(address), hex(data)))
+        elif address < 0x3000:
+            a = self._address_from_mirror_type(address) - 0x2000
             self._vram.write_byte(a, data)
+        elif address < 0x3F00:
+            self._write(address-0x1000, data)
         else:
-            raise RuntimeError('ppu write address {} data {}'.format(hex(address), hex(data)))
+            address &= 0x3F1F
+
+            if address < 0x3F10:
+                self._background_palette.write_byte(address-0x3F00, data)
+            else:
+                if not (address & 0b11):
+                    address -= 0x10
+                    self._background_palette.write_byte(address-0x3F00, data)
+
+                self._sprite_palette.write_byte(address-0x3F10, data)
 
     def _read(self, address):
         address &= 0x3FFF                               # 映射 0x4000 - 0xFFFF 到 0x0000 - 0x3FFF
-        if 0x3F00 <= address:
-            a = (address & 0x3F1F) - 0x3F00             # 映射 0x3F20 - 0x4000 到 0x3F00 - 0x3F1F
-            return self._palettes[a]
-        elif 0x2000 <= address:
-            if 0x3000 <= address:
-                a = (address - 0x1000) - 0x2000         # 映射 0x3000 - 0x3F00 到 0x2000 - 0x2EFF
-            else:
-                a = (address - 0x2000)
-            a = self._address_from_mirror_type(a)
-            return self._vram.read_byte(a)
-        else:
+        if address < 0x2000:
             return self._cartridge.chr_rom[address]
+        elif address < 0x3000:
+            a = self._address_from_mirror_type(address) - 0x2000
+            return self._vram.read_byte(a)
+        elif address < 0x3F00:
+            self._read(address-0x1000)
+        else:
+            address &= 0x3F1F
+
+            if address < 0x3F10:
+                return self._background_palette.read_byte(address-0x3F00)
+            else:
+                # Addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C
+                # https://wiki.nesdev.com/w/index.php/PPU_palettes
+                if not (address & 0b11):
+                    address -= 0x10
+                    self._background_palette.read_byte(address-0x3F00)
+
+                return self._sprite_palette.read_byte(address-0x3F10)
 
     def _address_from_mirror_type(self, address):
         t = self._cartridge.mirroring_type

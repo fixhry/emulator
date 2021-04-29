@@ -59,6 +59,7 @@ class CPUBus(MemoryRead, MemoryWrite):
         elif 0x4000 <= address:
             # TODO 外设
             if address == 0x4014:
+                print('DMA')
                 start = data * 0x100
                 spr_ram = self._ram[start:start+256]
                 for i, e in enumerate(spr_ram):

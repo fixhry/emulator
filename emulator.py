@@ -31,7 +31,9 @@ class Emulator:
 
     def _setup_ppu_bus(self):
         vram = RAM(0x1000)  # 4K
-        self._ppu_bus = PPUBus(self._ppu, vram, self._cartridge, palettes)
+        background_palette = RAM(16)
+        sprite_palette = RAM(16)
+        self._ppu_bus = PPUBus(self._ppu, vram, self._cartridge, background_palette, sprite_palette)
 
     def power(self):
         pass
@@ -41,9 +43,8 @@ class Emulator:
         Catch-up
         http://wiki.nesdev.com/w/index.php/Catch-up
         """
-        while self._counter <= 300000:
+        while self._counter <= 200000:
             self._cpu.emulate_once()
             self._counter += 1
             # log(self._counter)
-        self._ppu.draw_background()
-        # self._ppu.draw_pattern_table()
+        self._ppu.draw()

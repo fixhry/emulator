@@ -50,7 +50,7 @@ class CPU:
         # 操作数
         self._opcode = None
         self._operand = None
-        self._cycles = 7
+        self._cycles = 0
         # 执行当前指令需要消耗的 CPU 周期
         self._cycles_costs = 0
         self._current_instruction = None
@@ -318,7 +318,7 @@ class CPU:
         """
         self._flag_c = 0
         self._flag_z = 0
-        self._flag_i = 1
+        self._flag_i = 0
         self._flag_d = 0
         self._flag_b = 0
         self._flag_v = 0
@@ -976,11 +976,13 @@ class CPU:
         """
         IRQ interrupt vector at $FFFE/F
         """
+        if self._flag_i == 1:
+            return
         self._stack_push_word(self._register_pc)
         self._stack_push_byte(self.status | 0b00010000)
 
-        self._register_pc = self._read_word(0xFFFE)
         self._set_break_command_flag(True)
+        self._register_pc = self._read_word(0xFFFE)
 
     def _rti(self):
         value = self._stack_pop_byte()
@@ -992,6 +994,12 @@ class CPU:
         self._set_negative_flag(bool(value & 0x80))
 
         self._register_pc = self._stack_pop_word()
+
+    def reset(self):
+        self._setup_status_flags()
+        self._setup_registers()
+
+        self._cycles = 0
 
     def tick(self, cycles):
         self._cycles += cycles
