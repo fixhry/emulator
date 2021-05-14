@@ -1,10 +1,11 @@
+import threading
 from cpu import CPU
 from ppu import PPU
+from canvas import Canvas
 from memory.ram import RAM
 from bus.cpu_bus import CPUBus
 from bus.ppu_bus import PPUBus
 from cartridge import Cartridge
-from memory.palettes import palettes
 
 
 class Emulator:
@@ -13,6 +14,7 @@ class Emulator:
     CPU is guaranteed to receive NMI every interrupt ~29780 CPU cycles
     """
     def __init__(self, rom_path):
+        self._canvas = Canvas()
         self._rom_path = rom_path
         self._cartridge = Cartridge(self._rom_path)
         self._setup_cpu_bus()
@@ -37,16 +39,33 @@ class Emulator:
         sprite_palette = RAM(16)
         self._ppu_bus = PPUBus(self._ppu, vram, self._cartridge, background_palette, sprite_palette)
 
-    def power(self):
-        pass
+    def tick(self):
+        while True:
+            self._cpu.tick()
+            self._ppu.tick()
+            self._ppu.tick()
+            self._ppu.tick()
 
     def run(self):
         """
         Catch-up
         http://wiki.nesdev.com/w/index.php/Catch-up
         """
-        while self._counter <= 100000:
-            self._cpu.emulate_once()
-            self._counter += 1
-            # log(self._counter)
-        self._ppu.draw()
+        p = threading.Thread(target=self.tick)
+        p.start()
+        while True:
+            self._canvas.update()
+            if self._ppu.frame_ready:
+                self._canvas.update_frame(self._ppu.frame_buffer)
+                self._ppu.frame_ready = False
+                self._canvas.draw()
+
+
+def main():
+    rom = 'mario.nes'
+    emu = Emulator(rom)
+    emu.run()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,37 +1,4 @@
-import time
-
-
 from utils import *
-
-
-def load_nestest_log():
-    with open('f_nestest.json', 'r') as f:
-        d = f.read()
-        j = json.loads(d)
-    return j
-
-
-log_list = load_nestest_log()
-
-
-def log_diff(index, output, logs):
-    expected = logs[index]
-    o = output
-    # o = output.split(' ')
-    tail = expected[-1]
-    expected.pop()
-    expected.pop()
-    expected.append(tail)
-    msg = """
-        -------- {} -----------
-        -------- output -------
-        {}
-        -------- expected ------
-        {}
-    """.format(index, o, expected)
-    for i, s in enumerate(o):
-        e = expected[i]
-        assert e == s, msg
 
 
 class CPU:
@@ -52,7 +19,7 @@ class CPU:
         self._operand = None
         self._cycles = 0
         # 执行当前指令需要消耗的 CPU 周期
-        self._cycles_costs = 0
+        self._defer_cycles = 0
         self._current_instruction = None
         # debug
         self.debug = True
@@ -307,6 +274,8 @@ class CPU:
         reset button. When a reset occurs the system jumps to the address located at $FFFC and $FFFD
         """
         self._register_pc = self._read_word(0xFFFC)
+        # self._register_pc = 0xc000
+
         self._register_sp = 0xFD
         self._register_a = 0x00
         self._register_x = 0x00
@@ -1000,11 +969,7 @@ class CPU:
         self._setup_registers()
 
         self._cycles = 0
-        self.tick(8)
-
-    def tick(self, cycles):
-        self._cycles += cycles
-        self._bus.sync(cycles)
+        self._defer_cycles = 8
 
     def connect_to_bus(self, bus):
         self._bus = bus
@@ -1013,7 +978,7 @@ class CPU:
     def _decode_opcode(self):
         self._current_instruction = self._instruction_set[self._opcode]
         execute, fetch_operand, name, mode, i_bytes, cycles = self._current_instruction
-        self._cycles_costs = cycles
+        self._defer_cycles = cycles
         self._fetch_operand = fetch_operand
         self._execute = execute
 
@@ -1021,88 +986,42 @@ class CPU:
         self._fetch_operand()
         self._execute()
 
-    def emulate_once(self):
+    def log(self):
+        pc = self._register_pc
+        op = self._opcode
+        a = self._register_a
+        sp = self._register_sp
+        # p = self.status
+        p = self.status & 0xdf
+        x = self._register_x
+        y = self._register_y
+        a1, b1, name, *others = self._current_instruction
+        # log(name, 'PC', pc, 'OP', op, 'A', a, 'sp', sp, 'p', p, 'x', x, 'y', y)
+        return [pc, op, a, sp, p, x, y]
+
+    def tick(self):
+        if self._defer_cycles == 0:
+            self.emulate()
+        self._defer_cycles -= 1
+
+    def emulate(self):
         self._opcode_from_memory()
         self._decode_opcode()
-        # if self.debug:
-        #     self.debug_nestest()
-        # log(self._current_instruction[-4])
         self._execute_instruction()
-        self._update_clock_cycles(self._cycles_costs)
-        # 同步 ppu
-        self._bus.sync(self._cycles)
-        self._cycles = 0
+        self._update_clock_cycles()
 
     def _tick(self):
-        self._cycles += 1
+        self._defer_cycles += 1
 
-    def _update_clock_cycles(self, cycles):
-        self._cycles += cycles
+    def _update_clock_cycles(self):
+        self._cycles += self._defer_cycles
 
     def handle_nmi(self):
         self._stack_push_word(self._register_pc)
         self._stack_push_byte(self.status | 0b00010000)
         self._set_interrupt_disabled_flag(True)
         self._register_pc = self._read_word(0xFFFA)
-        self._bus.sync(2)
-
-    def debug_nestest(self):
-        # ppu_ctrl_1 = self._ppu.control_1
-        # ppu_ctrl_2 = self._ppu.control_2
-        # ppu_status = self._read_byte(0x2002)
-        # spr_ram_address = self._read_byte(0x2003)
-        # spr_ram_io = self._read_byte(0x2004)
-        # vram_address = self._read_word(0x2005)
-        # vram_io = self._read_byte(0x2007)
-        """
-        Writes cause a DMA transfer to occur from CPU memory at
-        address $100 x n, where n is the value written, to SPR-RAM. 
-        """
-        spr_dma = self._read_byte(0x4014)
-        *others, cycles = self._instruction_set[self._opcode]
-        s = self._cycles
-        i = self._count
-        self._count += 1
-        output2 = [
-            self._register_pc,
-            self._opcode,
-            self._register_a,
-            self._register_x,
-            self._register_y,
-            self.status,
-            self._register_sp,
-            # ppu_ctrl_1,
-            # ppu_ctrl_2,
-            # s,
-        ]
-        expect2 = log_list[i]
-        cycles = expect2[-1]
-        expect2.pop()
-        expect2.pop()
-        expect2.pop()
-        # expect2.append(cycles)
-        # log('ppu', [
-        #     ppu_ctrl_1,
-        #     ppu_ctrl_2,
-        #     ppu_status,
-        #     spr_ram_address,
-        #     spr_ram_io,
-        #     vram_address,
-        #     vram_io,
-        # ])
-        if expect2 != output2:
-            log('<{}>'.format(i))
-            log([hex(o) for o in output2])
-            log([hex(o) for o in expect2])
-            assert False
+        self._defer_cycles += 7
 
     def _opcode_from_memory(self):
         self._opcode = self._read_byte(self._register_pc)
-
-    def run(self):
-        while True:
-            try:
-                self.emulate_once()
-            except Exception as e:
-                log('ERROR count {}'.format(self._count-1), hex(self._opcode).upper(), self._current_instruction[3], e)
-                break

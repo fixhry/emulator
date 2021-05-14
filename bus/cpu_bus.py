@@ -13,15 +13,6 @@ class CPUBus(MemoryRead, MemoryWrite):
         self._ppu = ppu
         self._ppu.connect_to_cpu_bus(self)
 
-    def sync(self, cycles):
-        """
-        CPU 通知 PPU APU 执行，用于同步时钟周期
-
-        :param cycles: CPU 执行指令后消耗的时钟周期
-        """
-        for i in range(cycles):
-            self._ppu.tick()
-
     def trigger_nmi(self):
         self._cpu.handle_nmi()
 
@@ -59,7 +50,6 @@ class CPUBus(MemoryRead, MemoryWrite):
         elif 0x4000 <= address:
             # TODO 外设
             if address == 0x4014:
-                print('DMA')
                 start = data * 0x100
                 spr_ram = self._ram[start:start+256]
                 for i, e in enumerate(spr_ram):

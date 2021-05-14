@@ -1,10 +1,9 @@
 from enum import Enum
 import math
-from PIL import Image
-
 from utils import *
 
 from memory.ram import RAM
+from memory.palettes import palettes
 
 
 class MirroringType(Enum):
@@ -25,62 +24,6 @@ class SpritePixel(Enum):
     PALETTE = 0x3F
     BEHIND_BG = 0x40
     ZERO = 0x80
-
-
-width = 256
-height = 240
-image = Image.new('RGB', (width, height))
-
-nametable = [36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 240, 241, 36, 36, 36, 36, 224, 225, 225,
-             226, 224, 225, 225, 226, 224, 226, 36, 224, 226, 36, 224, 225, 225, 226, 224, 225, 225, 226, 224, 236, 36,
-             224, 226, 36, 36, 36, 36, 36, 227, 227, 227, 229, 227, 227, 227, 229, 227, 229, 36, 227, 229, 36, 227, 227,
-             227, 229, 227, 227, 227, 229, 227, 227, 243, 227, 229, 36, 36, 36, 36, 36, 227, 228, 227, 231, 227, 228,
-             227, 229, 227, 229, 36, 227, 229, 36, 227, 228, 227, 229, 227, 228, 227, 229, 227, 227, 227, 227, 229, 36,
-             36, 36, 36, 36, 227, 227, 227, 226, 227, 227, 227, 229, 227, 229, 36, 227, 229, 36, 227, 227, 227, 229,
-             227, 227, 227, 229, 227, 227, 227, 227, 229, 36, 36, 36, 36, 36, 227, 228, 227, 229, 227, 242, 227, 229,
-             227, 227, 226, 227, 227, 226, 227, 227, 227, 229, 227, 227, 227, 229, 227, 242, 227, 227, 229, 36, 36, 36,
-             36, 36, 230, 227, 227, 231, 235, 36, 230, 231, 230, 227, 231, 230, 227, 231, 230, 227, 227, 231, 230, 227,
-             227, 231, 235, 36, 230, 227, 231, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 224, 225,
-             225, 226, 224, 226, 224, 225, 225, 226, 232, 36, 224, 226, 224, 225, 225, 226, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 227, 227, 227, 231, 227, 229, 227, 245, 246, 231, 227, 243, 227, 229, 230, 227,
-             227, 231, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 227, 227, 239, 36, 227, 229, 227, 36, 36,
-             36, 227, 227, 227, 229, 36, 227, 229, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 227, 227,
-             225, 234, 227, 229, 227, 233, 227, 226, 227, 227, 227, 229, 36, 227, 229, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 227, 227, 239, 36, 227, 229, 227, 243, 227, 229, 227, 242, 227, 229, 36, 227,
-             229, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 230, 231, 36, 36, 230, 231, 230, 231, 230,
-             231, 235, 36, 230, 231, 36, 230, 231, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 10, 36, 36, 1, 37, 25, 21, 10, 34, 14, 27, 36, 16, 10, 22, 14, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 11, 36, 36, 2, 37, 25, 21, 10, 34, 14, 27, 36, 16,
-             10, 22, 14, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 12, 36, 36,
-             11, 10, 21, 21, 24, 24, 23, 36, 36, 29, 27, 18, 25, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 244, 1, 9, 8, 4, 36, 23, 18, 23,
-             29, 14, 23, 13, 24, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
-             36, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
-
-oam = [240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 140, 168, 34, 44, 140, 169, 34, 52, 148, 170, 34, 48,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0, 240, 0, 0, 0,
-       240, 0, 0, 0, ]
 
 
 class Sprite:
@@ -109,6 +52,8 @@ class PPU:
         self._scanline = 240
         self._cycle = 340
         self._nmi_delay = 0
+        self.frame_ready = False
+        self.frame_buffer = [(0, 0, 0)] * 256 * 240
 
         self._setup_registers()
         self._spr_ram = RAM(256)
@@ -118,6 +63,10 @@ class PPU:
 
         self._cpu_bus = None
         self._ppu_bus = None
+
+    @property
+    def cycle(self):
+        return self._cycle
 
     """
     寄存器
@@ -150,7 +99,6 @@ class PPU:
     @property
     def show_sprite(self):
         return ((self.mask >> 4) & 1) == 1
-
 
     @property
     def show_background_left(self):
@@ -187,27 +135,21 @@ class PPU:
 
     @property
     def background_pattern_table_address(self):
-        flag = (self._control >> 3) & 1
+        flag = (self._control >> 4) & 1
         address = 0x0 if flag is 0 else 0x1000
         return address
 
     @property
     def sprite_pattern_table_address(self):
-        flag = (self._control >> 2) & 1
+        flag = (self._control >> 3) & 1
         address = 0x0 if flag is 0 else 0x1000
         return address
 
     @property
     def sprite_size(self):
         flag = (self._control >> 5) & 1
-        size = (8, 16) if flag is 0 else (8, 16)
+        size = 8 if flag is 0 else 16
         return size
-
-    @property
-    def pattern_table_address(self):
-        flag = (self._control >> 3) & 1
-        address = 0x0 if flag is 0 else 0x1000
-        return address
 
     @property
     def name_table_address(self):
@@ -273,11 +215,9 @@ class PPU:
             return last_cache
 
     def _write_ppu_data(self, data):
-        # FIXME 这里的地址是相对 name tables 的偏移?
-        # address = self._vram_address + 0x2000
         address = self._vram_address
-        # log('v', hex(self._vram_address), 'address', hex(address))
         self._ppu_bus.write_byte(address, data)
+
         self._update_vram_address()
 
     def _write_ppu_address(self, data):
@@ -321,14 +261,13 @@ class PPU:
         self._status = updated
 
     def _trigger_nmi(self):
-        self._set_vblank_status()
         self._cpu_bus.trigger_nmi()
 
     def _name_table_from_vram(self):
         return self._ppu_bus.read_name_table(self.name_table_address)
 
-    def _pattern_table_from_vram(self):
-        return self._ppu_bus.read_pattern_table(self.pattern_table_address)
+    def _pattern_table_from_vram(self, address):
+        return self._ppu_bus.read_pattern_table(address)
 
     def _read_ppu_status(self):
         data = self._status | self._prev_data
@@ -375,8 +314,8 @@ class PPU:
         count = 0
         i = 0
         while i < 64:
-            y = self._spr_ram[i * 4]
-            if self._scanline < y or (self._scanline >= (y + self.sprite_size)):
+            y = self._spr_ram.read_byte(i * 4)
+            if (self._scanline < y) or (self._scanline >= (y + self.sprite_size)):
                 continue
 
             if count == 8:
@@ -436,7 +375,7 @@ class PPU:
                     continue
 
                 self._sprite_pixels[s.x + i] = index | (SpritePixel.BEHIND_BG.value if behind else 0) | (
-                    SpritePixel.ZERO if is_sprite_0 else 0)
+                    SpritePixel.ZERO.value if is_sprite_0 else 0)
 
                 i += 1
 
@@ -576,7 +515,7 @@ class PPU:
         if address == 0x2001:
             return self._mask
         if address == 0x2002:
-            return self._status
+            return self._read_ppu_status()
         elif address == 0x2003:
             # OAM address
             return 0
@@ -623,7 +562,7 @@ class PPU:
         self._oam_address += 1
 
     def write_spr_ram(self, address, data):
-        log('write_spr_ram address {} data {}'.format(hex(address), hex(data)))
+        # log('write_spr_ram address {} data {}'.format(hex(address), hex(data)))
         self._spr_ram.write_byte(address, data)
 
     def sprite_color_from_table(self, index, table):
@@ -637,21 +576,31 @@ class PPU:
         color_index = v >> z & 0b11
         return color_index
 
+    def _sprite_palette_from_oam(self, attribute):
+        index = attribute & 0b11
+        start = 0x11 + index * 4
+        return [
+            palettes[self._ppu_bus.read_byte(0x3F00)],
+            palettes[self._ppu_bus.read_byte(0x3F00 + start)],
+            palettes[self._ppu_bus.read_byte(0x3F00 + start + 1)],
+            palettes[self._ppu_bus.read_byte(0x3F00 + start + 2)],
+        ]
+
     def draw_sprite(self):
-        # TODO palette scroll 8 * 16
-        pattern_table = self._pattern_table_from_vram()
+        # TODO scroll 8 * 16
+        pattern_table = self._pattern_table_from_vram(self.sprite_pattern_table_address)
         i = 0
-        # log('spr ram', self._spr_ram)
         while i < self._spr_ram.size:
             s = self._spr_ram[i:i + 4]
-            # s = oam[i:i+4]
             x = s[3]
             y = s[0] + 1
             tail_index = s[1] * 16
             tail_data = pattern_table[tail_index:tail_index + 16]
-            self.draw_tile((x, y), tail_data)
+            attribute = s[2]
+            palette = self._sprite_palette_from_oam(attribute)
+            if 0 < x < 256 and 0 < y < 240:
+                self.draw_tile((x, y), tail_data, palette)
             i += 4
-        image.show()
 
     def draw_background(self):
         """
@@ -667,59 +616,47 @@ class PPU:
         Name Tables $03C0  960 Byte
         每字节控制
         """
-        pattern_table = self._pattern_table_from_vram()
+        pattern_table = self._pattern_table_from_vram(self.background_pattern_table_address)
         name_table = self._name_table_from_vram()
-        log('name_table', name_table)
         attribute_table = name_table[-64:]
         i = 0
         while i < 960:
             tail_index = name_table[i]
-            # tail_index = nametable[i]
             start = tail_index * 16
             end = start + 16
             tail_data = pattern_table[start:end]
             tail_x = (i % 32)
             tail_y = math.floor(i / 32)
-            palettes = self._background_palettes_from_attribute_table(attribute_table, tail_x, tail_y)
-            self.draw_tile((tail_x * 8, tail_y * 8), tail_data)
+            palette = self._background_palette_from_attribute_table(attribute_table, tail_x, tail_y)
+            self.draw_tile((tail_x * 8, tail_y * 8), tail_data, palette)
             i += 1
-        image.show()
 
-    def _background_palettes_from_attribute_table(self, attribute_table, x, y):
-        attr_table_idx = math.floor(x / 4) + math.floor(y / 4) * 8
-        attr_byte = attribute_table[attr_table_idx]
-        palette_index = (attr_byte >> (math.floor((x % 4) / 2) * 2 + math.floor((y % 4) / 2) * 4)) & 0b11
-        palette_start = 1 + palette_index * 4
-        return [
-            self._ppu_bus.read_byte(0x3F00),
-            self._ppu_bus.read_byte(palette_start + 0x3F00),
-            self._ppu_bus.read_byte(palette_start + 0x3F00 + 1),
-            self._ppu_bus.read_byte(palette_start + 0x3F00 + 2),
-        ]
+    def _background_palette_from_attribute_table(self, attribute_table, x, y):
+        """
+        根据坐标求出当前 tile 属于哪个 block
+        取出 block 在属性表中的 byte
+        根据坐标求出当前 tile 在 block 中的 index
+        用 index 取出调色板
+        """
+        # FIXME
+        attribute_index = math.ceil(x / 32) + math.floor(y / 32) * 8
+        attribute_data = attribute_table[attribute_index]
+        tile_index = math.floor((x % 32) / 16) * 2 + math.floor((y % 32) / 16)
+        palette_index = (attribute_data >>
+                         ((0, 4, 2, 6)[tile_index])) & 0b11
+        palette = [palettes[self._ppu_bus.read_byte(0x3F00)]]
+        if palette_index == 0:
+            return palette + [palettes[self._ppu_bus.read_byte(0x3F01)], palettes[self._ppu_bus.read_byte(0x3F02)], palettes[self._ppu_bus.read_byte(0x3F03)]]
+        elif palette_index == 1:
+            return palette + [palettes[self._ppu_bus.read_byte(0x3F05)], palettes[self._ppu_bus.read_byte(0x3F06)], palettes[self._ppu_bus.read_byte(0x3F07)]]
+        elif palette_index == 2:
+            return palette + [palettes[self._ppu_bus.read_byte(0x3F09)], palettes[self._ppu_bus.read_byte(0x3F0A)], palettes[self._ppu_bus.read_byte(0x3F0B)]]
+        elif palette_index == 3:
+            return palette + [palettes[self._ppu_bus.read_byte(0x3F0D)], palettes[self._ppu_bus.read_byte(0x3F0E)], palettes[self._ppu_bus.read_byte(0x3F0F)]]
+        else:
+            raise RuntimeError('palette_index', palette_index)
 
-    def draw_pattern_table(self):
-        i = 0
-        palettes = [
-            (0, 0, 0),
-            (255, 0, 0),
-            (0, 255, 0),
-            (0, 0, 255),
-        ]
-        while i < 512:
-            start = i * 16
-            end = start + 16
-            data = self._ppu_bus._cartridge.chr_rom[start:end]
-            x = (i % 32)
-            y = math.floor(i / 32)
-            sx = x * 8
-            sy = y * 8
-            self.draw_tile((sx, sy), data, palettes)
-            i += 1
-        image.show()
-
-    def draw_tile(self, position, data, palettes=None):
-        if palettes is None:
-            palettes = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255)]
+    def draw_tile(self, position, data, palette):
         sx, sy = position
         y = 0
         while y < 8:
@@ -730,47 +667,54 @@ class PPU:
                 c1 = (byte_low >> (7 - x)) & 1
                 c2 = (byte_high >> (7 - x)) & 1
                 pixel = (c2 << 1) + c1
-                color = palettes[pixel]
+                color = palette[pixel]
                 px = sx + x
                 py = sy + y
-                if px <= width and py <= height:
-                    image.putpixel((px, py), color)
+                index = py * 256 + px
+                if 0 < px < 256 and 0 < py < 240:
+                    self.frame_buffer[index] = color
                 x += 1
             y += 1
 
-    def draw(self):
-        # self.draw_pattern_table()
-        self.draw_background()
-        # self.draw_sprite()
-        pass
+    def log(self):
+        return [
+            self._cycle,
+            self._scanline,
+            self._control,
+            self._mask,
+            self._status,
+            self._vram_address,
+            self._tmp_vram_address,
+            self._fine_x,
+            self._write_toggle,
+        ]
 
-    def _update_cycle(self):
-        if self.vblank_occurring and \
-                self.nmi_enabled and \
-                self._nmi_delay == 0:
-            self._nmi_delay -= 1
-            self._trigger_nmi()
-
-        if self._cycle > 340:
-            self._cycle = 0
-            if self._scanline > 261:
-                self._scanline = 0
-                self._frame += 1
-                # TODO frame ready
-            self._scanline += 1
-
+    def _update_vblank_status(self):
         if self._scanline == 241 and self._cycle == 1:
             self._set_vblank_status()
-
             if self.nmi_enabled:
-                self._nmi_delay = 15
+                self._trigger_nmi()
 
         if self._scanline == 261 and self._cycle == 1:
             self._clear_vblank_status()
             self._clear_sprite_0_hit()
             self._clear_sprite_overflow()
 
+    def _update_cycle(self):
         self._cycle += 1
+
+        if self._cycle > 340:
+            self._cycle = 0
+            self._scanline += 1
+            if self._scanline > 261:
+                self._scanline = 0
+                self._frame += 1
+                log('frame', self._frame)
+                self.frame_ready = True
+                self.draw_background()
+                self.draw_sprite()
+
+        self._update_vblank_status()
 
     def tick(self):
         """
@@ -778,60 +722,54 @@ class PPU:
         1 scanline 341 PPU cycles
         1 cycle 1 pixel
         """
-        if self._scanline == 261 and \
-                self._cycle == 339 and \
-                self._frame & 0x01 and \
-                (self.show_background or self.show_sprite):
-            self._update_cycle()
-
         self._update_cycle()
 
         if (not self.show_background) and (not self.show_sprite):
             return
 
-        # 0 - 239: visible
-        if 0 <= self._scanline <= 239:
-            c = self._cycle
-            if c == 1:
-                self._clear_secondary_oam()
-
-            if c == 65:
-                self._eval_sprite()
-
-            if 1 <= c < 256:
-                self._shift_background()
-                self._render_pixel()
-                self._fetch_tail_data()
-
-            if c == 256:
-                self._update_vertical_position()
-
-            if c == 257:
-                self._copy_horizontal_bits()
-                self._fetch_sprite()
-
-            if 321 <= self._cycle <= 336:
-                self._shift_background()
-                self._fetch_tail_data()
-
-        # 240 - 260: Do nothing
-
-        # 261: pre render
-        if self._scanline == 261:
-            c = self._cycle
-            if 1 <= c <= 256:
-                self._shift_background()
-                self._fetch_tail_data()
-
-            if c == 256:
-                self._update_vertical_position()
-
-            if c == 257:
-                self._copy_horizontal_bits()
-
-            if c == 280:
-                self._copy_vertical_bits()
-
-            if 321 <= c <= 336:
-                self._shift_background()
-                self._fetch_tail_data()
+        # # 0 - 239: visible
+        # if 0 <= self._scanline <= 239:
+        #     c = self._cycle
+        #     if c == 1:
+        #         self._clear_secondary_oam()
+        #
+        #     if c == 65:
+        #         self._eval_sprite()
+        #
+        #     if 1 <= c <= 256:
+        #         self._shift_background()
+        #         self._render_pixel()
+        #         self._fetch_tail_data()
+        #
+        #     if c == 256:
+        #         self._update_vertical_position()
+        #
+        #     if c == 257:
+        #         self._copy_horizontal_bits()
+        #         self._fetch_sprite()
+        #
+        #     if 321 <= self._cycle <= 336:
+        #         self._shift_background()
+        #         self._fetch_tail_data()
+        #
+        # # 240 - 260: Do nothing
+        #
+        # # 261: pre render
+        # if self._scanline == 261:
+        #     c = self._cycle
+        #     if 1 <= c <= 256:
+        #         self._shift_background()
+        #         self._fetch_tail_data()
+        #
+        #     if c == 256:
+        #         self._update_vertical_position()
+        #
+        #     if c == 257:
+        #         self._copy_horizontal_bits()
+        #
+        #     if c == 280:
+        #         self._copy_vertical_bits()
+        #
+        #     if 321 <= c <= 336:
+        #         self._shift_background()
+        #         self._fetch_tail_data()
