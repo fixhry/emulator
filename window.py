@@ -3,10 +3,11 @@ import math
 from random import random
 
 
-class Canvas:
+class Window:
     def __init__(self):
         self.size = (256, 240)
         self._canvas = pygame.display.set_mode(self.size)
+        self._key_events_handlers = dict()
         self.running = True
         r1 = math.floor(random() * 255)
         r2 = math.floor(random() * 255)
@@ -35,16 +36,19 @@ class Canvas:
     def update_frame(self, buffer):
         self.pixels = buffer
 
+    def register_key_event_handler(self, key, handler):
+        self._key_events_handlers[key] = handler
+
     def _update_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pass
-                # self.update(1, event.pos)
-            elif event.type == pygame.MOUSEBUTTONUP:
-                pass
-                # self.update(0, event.pos)
+            elif event.type == pygame.KEYDOWN:
+                key_down, key_up = self._key_events_handlers.get(event.key, (lambda *args: None, lambda *args: None))
+                key_down()
+            elif event.type == pygame.KEYUP:
+                key_down, key_up = self._key_events_handlers.get(event.key, (lambda *args: None, lambda *args: None))
+                key_up()
 
     def update(self):
         pygame.display.flip()
@@ -63,4 +67,3 @@ class Canvas:
                 self.draw_point(i, j, pixel)
                 j += 1
             i += 1
-

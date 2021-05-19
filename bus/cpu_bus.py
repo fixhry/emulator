@@ -3,11 +3,12 @@ from memory.write import MemoryWrite
 
 
 class CPUBus(MemoryRead, MemoryWrite):
-    def __init__(self, cpu, ppu, ram, sram, cartridge, IO_registers):
+    def __init__(self, cpu, ppu, ram, sram, cartridge, joypad, IO_registers):
         self._ram = ram
         self._sram = sram
         self._cartridge = cartridge
         self._IO_registers = IO_registers
+        self._joypad = joypad
         self._cpu = cpu
         self._cpu.connect_to_bus(self)
         self._ppu = ppu
@@ -25,7 +26,10 @@ class CPUBus(MemoryRead, MemoryWrite):
         elif 0x4020 <= address:
             raise NotImplementedError('Expansion ROM 0x4020 - 0x6000 未实现')
         elif 0x4000 <= address:
-            # TODO 外设
+            # 手柄
+            if address == 0x4016:
+                d = self._joypad.read()
+                return d
             return self._IO_registers.read_byte(address - 0x4000)
         elif 0x2000 <= address:
             address &= 0x2007
@@ -48,7 +52,10 @@ class CPUBus(MemoryRead, MemoryWrite):
         elif 0x4020 <= address:
             raise NotImplementedError('Expansion ROM 0x4020 - 0x6000 未实现')
         elif 0x4000 <= address:
-            # TODO 外设
+            # 手柄
+            if address == 0x4016:
+                self._joypad.write(data)
+            # DMA
             if address == 0x4014:
                 start = data * 0x100
                 spr_ram = self._ram[start:start+256]

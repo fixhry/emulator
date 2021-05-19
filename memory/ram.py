@@ -25,10 +25,6 @@ class RAM(MemoryRead, MemoryWrite):
     def __getitem__(self, item):
         return self._data[item]
 
-    # FIXME test
-    def __repr__(self):
-        return json.dumps(self._data)
-
     # TODO __len__
     @property
     def size(self):

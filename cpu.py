@@ -39,15 +39,15 @@ class CPU:
 
     @property
     def program_counter(self):
-        return self._register_pc
+        return self._program_counter
 
     @property
     def stack_pointer(self):
-        return self._register_sp
+        return self._stack_pointer
 
     @property
     def accumulator(self):
-        return self._register_a
+        return self._accumulator
 
     @property
     def index_x(self):
@@ -273,11 +273,10 @@ class CPU:
         Reset interrupts are triggered when the system first starts and when the user presses the
         reset button. When a reset occurs the system jumps to the address located at $FFFC and $FFFD
         """
-        self._register_pc = self._read_word(0xFFFC)
-        # self._register_pc = 0xc000
+        self._program_counter = self._read_word(0xFFFC)
 
-        self._register_sp = 0xFD
-        self._register_a = 0x00
+        self._stack_pointer = 0xFD
+        self._accumulator = 0x00
         self._register_x = 0x00
         self._register_y = 0x00
 
@@ -297,13 +296,13 @@ class CPU:
         """
         0100 - 01FF 栈空间
         """
-        a = self._register_sp + 0x100
+        a = self._stack_pointer + 0x100
         self._write_byte(a, byte)
-        self._register_sp = (self._register_sp - 1) & 0xFF
+        self._stack_pointer = (self._stack_pointer - 1) & 0xFF
 
     def _stack_pop_byte(self):
-        self._register_sp = (self._register_sp + 1) & 0xFF
-        a = self._register_sp + 0x100
+        self._stack_pointer = (self._stack_pointer + 1) & 0xFF
+        a = self._stack_pointer + 0x100
         m = self._read_byte(a)
         return m
 
@@ -398,12 +397,12 @@ class CPU:
     def _address_imp(self):
         self._operand = None
 
-        self._register_pc += 1
+        self._program_counter += 1
 
     def _address_imm(self):
-        self._operand = self._register_pc + 1
+        self._operand = self._program_counter + 1
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _address_zp(self):
         """
@@ -411,31 +410,31 @@ class CPU:
 
         :return: 8 bit address operand
         """
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         op = self._read_byte(a) & 0xFF
         self._operand = op
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _address_zp_x(self):
         """
         :return: 8 bit address operand
         """
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         op = (self._read_byte(a) + self._register_x) & 0xFF
         self._operand = op
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _address_zp_y(self):
         """
         :return: 8 bit address operand
         """
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         op = (self._read_byte(a) + self._register_y) & 0xFF
         self._operand = op
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _address_rel(self):
         """
@@ -443,24 +442,24 @@ class CPU:
 
         :return: 8 bit signed operand
         """
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         op = byte_to_signed_int(self._read_byte(a))
         self._operand = op
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _address_abs(self):
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         op = self._read_word(a)
         self._operand = op
 
-        self._register_pc += 3
+        self._program_counter += 3
 
     def _address_abs_x(self):
         """
         :return: 16 bit address
         """
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         a1 = self._read_word(a)
         op = (a1 + self.index_x) & 0xFFFF
         if self._is_new_page(a1, op):
@@ -468,54 +467,54 @@ class CPU:
 
         self._operand = op
 
-        self._register_pc += 3
+        self._program_counter += 3
 
     def _address_abs_x_write(self):
         # 写的时候总是增加一个周期
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         a1 = self._read_word(a)
         op = (a1 + self.index_x) & 0xFFFF
         self._tick()
         self._operand = op
 
-        self._register_pc += 3
+        self._program_counter += 3
 
     def _address_abs_y(self):
         """
         :return: 16 bit address
         """
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         a1 = self._read_word(a)
         op = (a1 + self.index_y) & 0xFFFF
         if self._is_new_page(a1, op):
             self._tick()
         self._operand = op
 
-        self._register_pc += 3
+        self._program_counter += 3
 
     def _address_abs_y_write(self):
-        a = self._register_pc + 1
+        a = self._program_counter + 1
         a1 = self._read_word(a)
         op = (a1 + self.index_y) & 0xFFFF
         self._tick()
         self._operand = op
 
-        self._register_pc += 3
+        self._program_counter += 3
 
     # def _address_ind(self):
     #     """
     #     :return: 16 bit address
     #     """
-    #     a1 = self._register_pc + 1
+    #     a1 = self._program_counter + 1
     #     a2 = self._read_word(a1)
     #     op = self._read_word(a2) & 0xFFFF
     #     log('a1', hex(a1), 'a2', hex(a2), 'op', hex(op))
     #     self._operand = op
     #
-    #     self._register_pc += 3
+    #     self._program_counter += 3
 
     def _address_ind(self):
-        addr = self._read_word(self._register_pc + 1)
+        addr = self._read_word(self._program_counter + 1)
         first_addr = addr
         # There's a bug in the 6502 when fetching the
         # address on a page boundary. It reads
@@ -526,26 +525,26 @@ class CPU:
         else:
             second_addr = addr + 1
         self._operand = self._read_byte(first_addr) | (self._read_byte(second_addr) << 8)
-        self._register_pc += 3
+        self._program_counter += 3
 
     def _address_inx(self):
         """
         :return: 16 bit address
         """
-        a1 = self._register_pc + 1
+        a1 = self._program_counter + 1
         a2 = (self._read_byte(a1) + self.index_x) & 0xFF
         low = self._read_byte(a2)
         high = self._read_byte((a2 + 1) & 0xFF)
         op = (high << 8) + low
         self._operand = op
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _address_iny(self):
         """
         :return: 16 bit address
         """
-        a1 = self._read_byte(self._register_pc + 1) & 0xFF
+        a1 = self._read_byte(self._program_counter + 1) & 0xFF
         low = self._read_byte(a1)
         high = self._read_byte((a1 + 1) & 0xFF)
         a2 = (high << 8) + low
@@ -554,7 +553,7 @@ class CPU:
             self._tick()
         self._operand = op
 
-        self._register_pc += 2
+        self._program_counter += 2
 
     def _is_new_page(self, source, target):
         a = (source & 0xFF00)
@@ -568,26 +567,26 @@ class CPU:
 
     def _lda(self):
         m = self._read_byte(self._operand)
-        self._register_a = m
+        self._accumulator = m
 
         # TODO 重构 set_register_a set_register_x
-        a = self._register_a
+        a = self._accumulator
         bit7 = (a >> 7)
         self._set_zero_flag(a == 0)
         self._set_negative_flag(bit7 == 1)
 
     def _sta(self):
-        self._write_byte(self._operand, self._register_a)
+        self._write_byte(self._operand, self._accumulator)
 
     def _bpl(self):
         if self._flag_n == 0:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _sei(self):
         self._set_interrupt_disabled_flag(True)
@@ -611,20 +610,20 @@ class CPU:
         self._set_negative_flag(bit7 == 1)
 
     def _txs(self):
-        self._register_sp = self._register_x
+        self._stack_pointer = self._register_x
 
     def _bne(self):
         if self._flag_z == 0:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _cmp(self):
-        a = self._register_a
+        a = self._accumulator
         m = self._read_byte(self._operand)
 
         v = a - m
@@ -633,9 +632,9 @@ class CPU:
         self._set_negative_flag(((v >> 7) & 1) == 1)
 
     def _txa(self):
-        self._register_a = self._register_x
+        self._accumulator = self._register_x
 
-        a = self._register_a
+        a = self._accumulator
         bit7 = (a >> 7)
         self._set_zero_flag(a == 0)
         self._set_negative_flag(bit7 == 1)
@@ -643,24 +642,24 @@ class CPU:
     def _jsr(self):
         # 1 Byte 指令 2 Byte 地址
         # 执行指令时 pc 已经指向下一条指令了
-        pc = self._register_pc - 1
+        pc = self._program_counter - 1
 
         self._stack_push_word(pc)
 
-        self._register_pc = self._operand
+        self._program_counter = self._operand
 
     def _jmp(self):
-        self._register_pc = self._operand
+        self._program_counter = self._operand
 
     def _beq(self):
         if self._flag_z == 1:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _cpx(self):
         a = self._register_x
@@ -675,21 +674,21 @@ class CPU:
         if self._flag_c == 1:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _bmi(self):
         if self._flag_n == 1:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _ldy(self):
         a = self._read_byte(self._operand)
@@ -707,25 +706,25 @@ class CPU:
 
     def _sbc(self):
         m = self._read_byte(self._operand)
-        a = self._register_a
+        a = self._accumulator
         c = self._flag_c
         v = a + (m ^ 0xFF) + c
         self._set_overflow_flag((a ^ m) & (a ^ v) & 0x80)
         self._set_carry_flag(v & 0x100)
-        self._register_a = v & 0xFF
+        self._accumulator = v & 0xFF
 
-        self._set_zero_flag(self._register_a == 0)
-        self._set_negative_flag(self._register_a & 0x80)
+        self._set_zero_flag(self._accumulator == 0)
+        self._set_negative_flag(self._accumulator & 0x80)
 
     def _adc(self):
         value = self._read_byte(self._operand)
-        result = value + self._register_a + self._flag_c
+        result = value + self._accumulator + self._flag_c
         signed_result = (
-                byte_to_signed_int(value) + byte_to_signed_int(self._register_a) + self._flag_c
+                byte_to_signed_int(value) + byte_to_signed_int(self._accumulator) + self._flag_c
         )
         self._set_carry_flag(result > 255)
-        self._register_a = result & 0xFF
-        self._set_zero_flag(not self._register_a)
+        self._accumulator = result & 0xFF
+        self._set_zero_flag(not self._accumulator)
         self._set_overflow_flag(signed_result < -128 or signed_result > 127)
         self._set_negative_flag(bool(result & 0x80))
 
@@ -733,11 +732,11 @@ class CPU:
         self._set_carry_flag(False)
 
     def _rts(self):
-        self._register_pc = self._stack_pop_word() + 1
+        self._program_counter = self._stack_pop_word() + 1
 
     def _asl(self):
         if self._opcode == 0x0A:
-            self._register_a = self._shift_left(self._register_a)
+            self._accumulator = self._shift_left(self._accumulator)
         else:
             m = self._read_byte(self._operand)
             v = self._shift_left(m)
@@ -745,15 +744,15 @@ class CPU:
 
     def _ora(self):
         m = self._read_byte(self._operand)
-        self._register_a = m | self._register_a
+        self._accumulator = m | self._accumulator
 
-        a = self._register_a
+        a = self._accumulator
         bit7 = (a >> 7)
         self._set_zero_flag(a == 0)
         self._set_negative_flag(bit7 == 1)
 
     def _tax(self):
-        self._register_x = self._register_a
+        self._register_x = self._accumulator
 
         a = self._register_x
         bit7 = (a >> 7)
@@ -761,7 +760,7 @@ class CPU:
         self._set_negative_flag(bit7 == 1)
 
     def _tay(self):
-        self._register_y = self._register_a
+        self._register_y = self._accumulator
 
         a = self._register_y
         bit7 = (a >> 7)
@@ -769,9 +768,9 @@ class CPU:
         self._set_negative_flag(bit7 == 1)
 
     def _tya(self):
-        self._register_a = self._register_y
+        self._accumulator = self._register_y
 
-        a = self._register_a
+        a = self._accumulator
         bit7 = (a >> 7)
         self._set_zero_flag(a == 0)
         self._set_negative_flag(bit7 == 1)
@@ -780,11 +779,11 @@ class CPU:
         if self._flag_c == 0:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _dex(self):
         self._register_x = (self._register_x - 1) & 0xFF
@@ -839,12 +838,12 @@ class CPU:
         self._set_negative_flag(((a >> 7) & 1) == 1)
 
     def _pha(self):
-        self._stack_push_byte(self._register_a)
+        self._stack_push_byte(self._accumulator)
 
     def _pla(self):
-        self._register_a = self._stack_pop_byte()
+        self._accumulator = self._stack_pop_byte()
 
-        a = self._register_a
+        a = self._accumulator
         bit7 = (a >> 7)
         self._set_zero_flag(a == 0)
         self._set_negative_flag(bit7 == 1)
@@ -872,45 +871,45 @@ class CPU:
         v = self._read_byte(self._operand)
         self._set_overflow_flag(bool(v & 0b01000000))
         self._set_negative_flag(bool(v & 0b10000000))
-        self._set_zero_flag(not (self._register_a & v))
+        self._set_zero_flag(not (self._accumulator & v))
 
     def _bvs(self):
         if self._flag_v == 1:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _bvc(self):
         if self._flag_v == 0:
             self._tick()
 
-            target = self._register_pc + self._operand
-            if self._is_new_page(self._register_pc, target):
+            target = self._program_counter + self._operand
+            if self._is_new_page(self._program_counter, target):
                 self._tick()
 
-            self._register_pc = target
+            self._program_counter = target
 
     def _sed(self):
         self._set_decimal_mode_flag(True)
 
     def _and(self):
         m = self._read_byte(self._operand)
-        self._register_a = self._register_a & m
-        self._set_zero_flag(not self._register_a)
-        self._set_negative_flag(bool(self._register_a & 0x80))
+        self._accumulator = self._accumulator & m
+        self._set_zero_flag(not self._accumulator)
+        self._set_negative_flag(bool(self._accumulator & 0x80))
 
     def _eor(self):
         value = self._read_byte(self._operand)
-        self._register_a = self._register_a ^ value
-        self._set_zero_flag(not self._register_a)
-        self._set_negative_flag(bool(self._register_a & 0x80))
+        self._accumulator = self._accumulator ^ value
+        self._set_zero_flag(not self._accumulator)
+        self._set_negative_flag(bool(self._accumulator & 0x80))
 
     def _tsx(self):
-        self._register_x = self._register_sp
+        self._register_x = self._stack_pointer
 
         a = self._register_x
         bit7 = (a >> 7)
@@ -919,7 +918,7 @@ class CPU:
 
     def _lsr(self):
         if self._opcode == 0x4A:
-            self._register_a = self._shift_right(self._register_a)
+            self._accumulator = self._shift_right(self._accumulator)
         else:
             m = self._read_byte(self._operand)
             v = self._shift_right(m)
@@ -927,7 +926,7 @@ class CPU:
 
     def _rol(self):
         if self._opcode == 0x2A:
-            self._register_a = self._rotate_left(self._register_a)
+            self._accumulator = self._rotate_left(self._accumulator)
         else:
             m = self._read_byte(self._operand)
             v = self._rotate_left(m)
@@ -935,7 +934,7 @@ class CPU:
 
     def _ror(self):
         if self._opcode == 0x6A:
-            self._register_a = self._rotate_right(self._register_a)
+            self._accumulator = self._rotate_right(self._accumulator)
         else:
             m = self._read_byte(self._operand)
             v = self._rotate_right(m)
@@ -947,11 +946,11 @@ class CPU:
         """
         if self._flag_i == 1:
             return
-        self._stack_push_word(self._register_pc)
+        self._stack_push_word(self._program_counter)
         self._stack_push_byte(self.status | 0b00010000)
 
         self._set_break_command_flag(True)
-        self._register_pc = self._read_word(0xFFFE)
+        self._program_counter = self._read_word(0xFFFE)
 
     def _rti(self):
         value = self._stack_pop_byte()
@@ -962,7 +961,7 @@ class CPU:
         self._set_overflow_flag(bool(value & 0x40))
         self._set_negative_flag(bool(value & 0x80))
 
-        self._register_pc = self._stack_pop_word()
+        self._program_counter = self._stack_pop_word()
 
     def reset(self):
         self._setup_status_flags()
@@ -987,10 +986,10 @@ class CPU:
         self._execute()
 
     def log(self):
-        pc = self._register_pc
+        pc = self._program_counter
         op = self._opcode
-        a = self._register_a
-        sp = self._register_sp
+        a = self._accumulator
+        sp = self._stack_pointer
         # p = self.status
         p = self.status & 0xdf
         x = self._register_x
@@ -1017,11 +1016,11 @@ class CPU:
         self._cycles += self._defer_cycles
 
     def handle_nmi(self):
-        self._stack_push_word(self._register_pc)
+        self._stack_push_word(self._program_counter)
         self._stack_push_byte(self.status | 0b00010000)
         self._set_interrupt_disabled_flag(True)
-        self._register_pc = self._read_word(0xFFFA)
+        self._program_counter = self._read_word(0xFFFA)
         self._defer_cycles += 7
 
     def _opcode_from_memory(self):
-        self._opcode = self._read_byte(self._register_pc)
+        self._opcode = self._read_byte(self._program_counter)

@@ -1,6 +1,5 @@
 from enum import Enum
 import math
-from utils import *
 
 from memory.ram import RAM
 from memory.palettes import palettes
@@ -10,29 +9,6 @@ class MirroringType(Enum):
     Horizontal = 0
     Vertical = 1
     Four_Screen = 2
-
-
-class SpriteAttribute(Enum):
-    PALETTE_L = 0x01
-    PALETTE_H = 0x02
-    PRIORITY = 0x20
-    FLIP_H = 0x40
-    FLIP_V = 0x80
-
-
-class SpritePixel(Enum):
-    PALETTE = 0x3F
-    BEHIND_BG = 0x40
-    ZERO = 0x80
-
-
-class Sprite:
-    def __init__(self, x, y, tile_index, attributes, is_sprite_0):
-        self.x = x
-        self.y = x
-        self.tile_index = tile_index
-        self.attributes = attributes
-        self.is_sprite_0 = is_sprite_0
 
 
 class PPU:
@@ -57,7 +33,6 @@ class PPU:
 
         self._setup_registers()
         self._spr_ram = RAM(256)
-        self._secondary_oam = [Sprite(0, 0, 0, 0, False) for i in range(8)]
         self._sprite_pixels = [0] * 256
         self._pixels = [0] * (256 * 240)
 
@@ -297,209 +272,6 @@ class PPU:
     def _read_oam_data(self):
         return self._spr_ram.read_byte(self._oam_address)
 
-    def _clear_secondary_oam(self):
-        if not self.show_sprite:
-            return
-
-        for e in self._secondary_oam:
-            e.x = 0xFF
-            e.y = 0xFF
-            e.attributes = 0xFF
-            e.tile_index = 0xFF
-
-    def _eval_sprite(self):
-        if not self.show_sprite:
-            return
-
-        count = 0
-        i = 0
-        while i < 64:
-            y = self._spr_ram.read_byte(i * 4)
-            if (self._scanline < y) or (self._scanline >= (y + self.sprite_size)):
-                continue
-
-            if count == 8:
-                self._set_sprite_overflow()
-                break
-
-            s = self._secondary_oam[count]
-            s.x = self._spr_ram[(i * 4) + 3]
-            s.y = y
-            s.tile_index = self._spr_ram[(i * 4) + 1]
-            s.attributes = self._spr_ram[(i * 4) + 2]
-            s.is_sprite_0 = i == 0
-
-            count += 1
-            i += 1
-
-    def _fetch_sprite(self):
-        if not self.show_sprite:
-            return
-
-        self._secondary_oam.reverse()
-        for s in self._secondary_oam:
-            if s.y >= 0xEF:
-                continue
-
-            behind = bool(s.attributes & SpriteAttribute.PRIORITY.value)
-            flip_h = bool(s.attributes & SpriteAttribute.FLIP_H.value)
-            flip_v = bool(s.attributes & SpriteAttribute.FLIP_V.value)
-            is_sprite_0 = s.is_sprite_0
-
-            # Calculate tile address
-            if self.sprite_size == 8:
-                base = self.sprite_pattern_table_address + (s.tile_index << 4)
-                offset = (7 - self._scanline + s.y) if flip_v else (self._scanline - s.y)
-                address = base + offset
-            else:
-                base = (0x1000 if (s.tile_index & 0x01) else 0x0000) + ((s.tile_index & 0xFE) << 4)
-                offset = (15 - self._scanline + s.y) if flip_v else (self._scanline - s.y)
-                address = base + offset % 8 + math.floor(offset / 8) * 16
-
-            # fetch tile data
-            tile_low = self._ppu_bus.read_byte(address)
-            tile_high = self._ppu_bus.read_byte(address + 8)
-
-            # Generate sprite pixels
-            i = 0
-            while i < 8:
-                b = (0x01 << i) if flip_h else (0x80 >> i)
-
-                bit_0 = 1 if (tile_low & b) else 0
-                bit_1 = 1 if (tile_high & b) else 0
-                bit_2 = 1 if (s.attributes & SpriteAttribute.PALETTE_L.value) else 0
-                bit_3 = 1 if (s.attributes & SpriteAttribute.PALETTE_H.value) else 0
-                index = (bit_3 << 3) | (bit_2 << 2) | (bit_1 << 1) | bit_0
-
-                if ((index % 4) == 0) and (((self._sprite_pixels[s.x + i] & SpritePixel.PALETTE.value) % 4) != 0):
-                    continue
-
-                self._sprite_pixels[s.x + i] = index | (SpritePixel.BEHIND_BG.value if behind else 0) | (
-                    SpritePixel.ZERO.value if is_sprite_0 else 0)
-
-                i += 1
-
-    def _render_pixel(self):
-        x = self._cycle - 1
-        y = self._scanline
-
-        offset = 0x8000 >> self._fine_x
-        bit_0 = 1 if (self._shift_low_background_tail_bytes & offset) else 0
-        bit_1 = 1 if (self._shift_high_background_tail_bytes & offset) else 0
-        bit_2 = 1 if (self._shift_low_background_attribute_bytes & offset) else 0
-        bit_3 = 1 if (self._shift_high_background_attribute_bytes & offset) else 0
-
-        palette_index = (bit_3 << 3) | (bit_2 << 2) | (bit_1 << 1) | bit_0
-        sprite_palette_index = self._sprite_pixels[x] & SpritePixel.PALETTE.value
-
-        is_transparent_sprite = (sprite_palette_index % 4 == 0) or not self.show_sprite
-        is_transparent_background = (palette_index % 4 == 0) or not self.show_background
-
-        address = 0x3F00
-        if is_transparent_background:
-            if is_transparent_sprite:
-                pass
-            else:
-                address = 0x3F10 + sprite_palette_index
-        else:
-            if is_transparent_sprite:
-                address = 0x3F00 + palette_index
-            else:
-                if self._sprite_pixels[x] & SpritePixel.ZERO.value:
-                    condition = (
-                        (not self.show_background or not self.show_sprite) or
-                        ((0 <= x <= 7) and (not self.show_sprite_left or not self.show_background_left)) or
-                        x == 255
-                    )
-                    if condition:
-                        pass
-                    else:
-                        self._set_sprite_0_hit()
-                address = (0x3F00 + palette_index) if (self._sprite_pixels[x] & SpritePixel.BEHIND_BG.value) else (0x3F10 + sprite_palette_index)
-        self._pixels[x + y * 256] = self._ppu_bus.read_byte(address)
-
-    def _shift_background(self):
-        if not self.show_background:
-            return
-        self._shift_low_background_tail_bytes = 0
-        self._shift_high_background_tail_bytes = 0
-        self._shift_low_background_attribute_bytes = 0
-        self._shift_high_background_attribute_bytes = 0
-
-    def _load_background(self):
-        self._shift_low_background_tail_bytes |= self._latches_low_background_tail_byte
-        self._shift_high_background_tail_bytes |= self._latches_high_background_tail_byte
-        self._shift_low_background_attribute_bytes |= (0xFF if (self._latches_attribute_table & 0x01) else 0)
-        self._shift_high_background_attribute_bytes |= (0xFF if (self._latches_attribute_table & 0x02) else 0)
-
-    def _fetch_name_table(self):
-        address = 0x2000 | (self._vram_address & 0x0FFF)
-        self._latches_name_table = self._ppu_bus.read_byte(address)
-
-    def _update_horizontal_position(self):
-        if (self._vram_address & 0x001F) == 31:
-            self._vram_address &= ~0x001F
-            self._vram_address ^= 0x0400
-        else:
-            self._vram_address += 1
-
-    def _update_vertical_position(self):
-        if (self._vram_address & 0x7000) != 0x7000:
-            self._vram_address += 0x1000
-        else:
-            self._vram_address &= ~0x7000
-            y = (self._vram_address & 0x03E0) >> 5
-            if y == 29:
-                y = 0
-                self._vram_address ^= 0x0800
-            elif y == 31:
-                y = 0
-            else:
-                y += 1
-            self._vram_address = (self._vram_address & ~0x03E0) | (y << 5)
-
-    def _copy_horizontal_bits(self):
-        self._vram_address = (self._vram_address & 0b1111101111100000) | (
-                self._tmp_vram_address & ~0b1111101111100000) & 0x7FFF
-
-    def _copy_vertical_bits(self):
-        self._vram_address = (self._vram_address & 0b1000010000011111) | (
-                self._tmp_vram_address & ~0b1000010000011111) & 0x7FFF
-
-    def _fetch_attribute_table(self):
-        address = 0x23C0 | (self._vram_address & 0x0C00) | ((self._vram_address >> 4) & 0x38) | (
-                (self._vram_address >> 2) & 0x07)
-        is_right = self._vram_address & 0x02
-        is_bottom = self._vram_address & 0x40
-        offset = (0x02 if is_bottom else 0) | (0x01 if is_right else 0)
-        self._latches_attribute_table = self._ppu_bus.read_byte(address) >> (offset << 1) & 0x03
-
-    def _fetch_low_background_tile_byte(self):
-        address = self.background_pattern_table_address + (self._latches_name_table * 16) + (
-                self._vram_address >> 12 & 0x07)
-        self._latches_low_background_tail_byte = self._ppu_bus.read_byte(address)
-
-    def _fetch_high_background_tile_byte(self):
-        address = self.background_pattern_table_address + (self._latches_name_table * 16) + (
-                self._vram_address >> 12 & 0x07) + 8
-        self._latches_high_background_tail_byte = self._ppu_bus.read_byte(address)
-
-    def _fetch_tail_data(self):
-        if not self.show_background:
-            return
-        i = self._cycle & 0x07
-        if i == 0:
-            self._update_horizontal_position()
-        elif i == 1:
-            self._load_background()
-            self._fetch_name_table()
-        elif i == 3:
-            self._fetch_attribute_table()
-        elif i == 5:
-            self._fetch_low_background_tile_byte()
-        elif i == 7:
-            self._fetch_high_background_tile_byte()
-
     def connect_to_ppu_bus(self, bus):
         self._ppu_bus = bus
 
@@ -562,19 +334,7 @@ class PPU:
         self._oam_address += 1
 
     def write_spr_ram(self, address, data):
-        # log('write_spr_ram address {} data {}'.format(hex(address), hex(data)))
         self._spr_ram.write_byte(address, data)
-
-    def sprite_color_from_table(self, index, table):
-        # 大图块对应的字节
-        j = math.floor(index / 4 / 16)
-        # 中图块的序号
-        v = table[j]
-        k = math.floor(index / (4 * 8))
-        z = (4 - k % 4) * 2
-        index += 4
-        color_index = v >> z & 0b11
-        return color_index
 
     def _sprite_palette_from_oam(self, attribute):
         index = attribute & 0b11
@@ -638,8 +398,7 @@ class PPU:
         根据坐标求出当前 tile 在 block 中的 index
         用 index 取出调色板
         """
-        # FIXME
-        attribute_index = math.ceil(x / 32) + math.floor(y / 32) * 8
+        attribute_index = math.ceil(x / 32) + math.ceil(y / 32) * 8
         attribute_data = attribute_table[attribute_index]
         tile_index = math.floor((x % 32) / 16) * 2 + math.floor((y % 32) / 16)
         palette_index = (attribute_data >>
@@ -660,14 +419,14 @@ class PPU:
         sx, sy = position
         y = 0
         while y < 8:
-            byte_low = data[y + 8]
-            byte_high = data[y]
+            byte_low = data[y]
+            byte_high = data[y + 8]
             x = 0
             while x < 8:
                 c1 = (byte_low >> (7 - x)) & 1
                 c2 = (byte_high >> (7 - x)) & 1
-                pixel = (c2 << 1) + c1
-                color = palette[pixel]
+                i = (c2 << 1) + c1
+                color = palette[i]
                 px = sx + x
                 py = sy + y
                 index = py * 256 + px
@@ -709,7 +468,7 @@ class PPU:
             if self._scanline > 261:
                 self._scanline = 0
                 self._frame += 1
-                log('frame', self._frame)
+                # log('frame', self._frame)
                 self.frame_ready = True
                 self.draw_background()
                 self.draw_sprite()
@@ -726,50 +485,3 @@ class PPU:
 
         if (not self.show_background) and (not self.show_sprite):
             return
-
-        # # 0 - 239: visible
-        # if 0 <= self._scanline <= 239:
-        #     c = self._cycle
-        #     if c == 1:
-        #         self._clear_secondary_oam()
-        #
-        #     if c == 65:
-        #         self._eval_sprite()
-        #
-        #     if 1 <= c <= 256:
-        #         self._shift_background()
-        #         self._render_pixel()
-        #         self._fetch_tail_data()
-        #
-        #     if c == 256:
-        #         self._update_vertical_position()
-        #
-        #     if c == 257:
-        #         self._copy_horizontal_bits()
-        #         self._fetch_sprite()
-        #
-        #     if 321 <= self._cycle <= 336:
-        #         self._shift_background()
-        #         self._fetch_tail_data()
-        #
-        # # 240 - 260: Do nothing
-        #
-        # # 261: pre render
-        # if self._scanline == 261:
-        #     c = self._cycle
-        #     if 1 <= c <= 256:
-        #         self._shift_background()
-        #         self._fetch_tail_data()
-        #
-        #     if c == 256:
-        #         self._update_vertical_position()
-        #
-        #     if c == 257:
-        #         self._copy_horizontal_bits()
-        #
-        #     if c == 280:
-        #         self._copy_vertical_bits()
-        #
-        #     if 321 <= c <= 336:
-        #         self._shift_background()
-        #         self._fetch_tail_data()
