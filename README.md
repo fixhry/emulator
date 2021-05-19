@@ -8,5 +8,5 @@ http://nesdev.com/NESDoc.pdf
 http://obelisk.me.uk/6502/reference.html
 
 # 截图
-![nestest](https://imgtu.com/i/g5uvrR)
-![balloon](https://imgtu.com/i/g5365q)
+![nestest](https://z3.ax1x.com/2021/05/19/g5uvrR.gif)
+![balloon](https://z3.ax1x.com/2021/05/19/g5365q.gif)
